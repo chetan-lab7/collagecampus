@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - College Tour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            padding: 1rem;
+            color: white;
+            z-index: 1000;
+        }
+
+        .admin-profile {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .admin-profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .location-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-card .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-card .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: #1a2a6c;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.8rem;
+            color: #1a2a6c;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #666;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .admin-profile {
+                padding: 0.5rem;
+            }
+
+            .admin-profile img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .admin-profile h4, .admin-profile p {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="admin-profile">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin">
+            <h4 id="admin-name">Admin</h4>
+            <p>Administrator</p>
+        </div>
+
+        <ul class="nav-menu">
+            <li>
+                <a href="#dashboard" onclick="showSection('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="manage-maps.html">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Manage Maps</span>
+                </a>
+            </li>
+            <li>
+                <a href="#colleges" onclick="showEditCollegeModal()">
+                    <i class="fas fa-university"></i>
+                    <span>Manage Colleges</span>
+                </a>
+            </li>
+            <li>
+                <a href="#locations" onclick="showSection('locations')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Manage Locations</span>
+                </a>
+            </li>
+            <li>
+                <a href="#reviews" onclick="showSection('reviews')">
+                    <i class="fas fa-star"></i>
+                    <span>Manage Reviews</span>
+                </a>
+            </li>
+            <li>
+                <a href="#events" onclick="showSection('events')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Manage Events</span>
+                </a>
+            </li>
+            <li>
+                <a href="#settings" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="#courses" onclick="showSection('courses')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Manage Courses</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <h2>Admin Dashboard</h2>
+            <button class="btn btn-outline-danger" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <section id="dashboard-section" class="content-section">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>15</h3>
+                    <p>Total Locations</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <h3>128</h3>
+                    <p>Total Reviews</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3>1,234</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar"></i>
+                    <h3>25</h3>
+                    <p>Upcoming Events</p>
+                </div>
+            </div>
+
+            <h4>Recent Activity</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>User</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2 mins ago</td>
+                            <td>New Review</td>
+                            <td>John D.</td>
+                            <td>Added a review for Library</td>
+                        </tr>
+                        <tr>
+                            <td>15 mins ago</td>
+                            <td>Location Update</td>
+                            <td>Admin</td>
+                            <td>Updated Cafeteria details</td>
+                        </tr>
+                        <tr>
+                            <td>1 hour ago</td>
+                            <td>New Event</td>
+                            <td>Admin</td>
+                            <td>Added Tech Fest 2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="locations-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage Locations</h4>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="collegeMapSelect" onchange="loadCollegeLocations()">
+                        <option value="rv">RV University</option>
+                        <option value="cmr">CMR University</option>
+                        <option value="ramaiah">Ramaiah University</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="showAddLocationModal()">
+                        <i class="fas fa-plus"></i> Add Location
+                    </button>
+                </div>
+            </div>
+
+            <div id="locations-list">
+                <!-- Location cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="reviews-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage Reviews</h4>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary" onclick="filterReviews('all')">All</button>
+                    <button class="btn btn-outline-primary" onclick="filterReviews('pending')">Pending</button>
+                    <button class="btn btn-outline-primary" onclick="filterReviews('approved')">Approved</button>
+                </div>
+            </div>
+
+            <div id="reviews-list">
+                <!-- Review cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="events-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage Events</h4>
+                <button class="btn btn-primary" onclick="showAddEventModal()">
+                    <i class="fas fa-plus"></i> Add Event
+                </button>
+            </div>
+
+            <div id="events-list">
+                <!-- Event cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="settings-section" class="content-section" style="display: none;">
+            <h4>Settings</h4>
+            <form id="settings-form" class="mt-4">
+                <div class="mb-3">
+                    <label class="form-label">Site Title</label>
+                    <input type="text" class="form-control" value="College Tour Dashboard">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Admin Email</label>
+                    <input type="email" class="form-control" value="admin@college.edu">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notification Settings</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label">Email notifications for new reviews</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label">Email notifications for new events</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </section>
+
+        <div class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage College Content</h4>
+                <button class="btn btn-primary" onclick="showEditCollegeModal()">
+                    <i class="fas fa-edit"></i> Edit College Content
+                </button>
+            </div>
+        </div>
+
+        <section id="courses-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage Courses</h4>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="collegeSelect" onchange="loadCollegeCourses()">
+                        <option value="rv">RV University</option>
+                        <option value="cmr">CMR University</option>
+                        <option value="ramaiah">Ramaiah University</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="showAddCourseModal()">
+                        <i class="fas fa-plus"></i> Add Course
+                    </button>
+                </div>
+            </div>
+
+            <div id="courses-list" class="row">
+                <!-- Courses will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Location Modal -->
+    <div class="modal fade" id="addLocationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-location-form">
+                        <div class="mb-3">
+                            <label class="form-label">Location Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="academic">Academic</option>
+                                <option value="sports">Sports</option>
+                                <option value="facilities">Facilities</option>
+                                <option value="dining">Dining</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Coordinates</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="latitude" placeholder="Latitude" required>
+                                <input type="text" class="form-control" name="longitude" placeholder="Longitude" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Operating Hours</label>
+                            <input type="text" class="form-control" name="hours" placeholder="e.g., 9:00 AM - 5:00 PM" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contact Information</label>
+                            <input type="text" class="form-control" name="contact" placeholder="Phone or email" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitLocationForm()">Add Location</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Location Modal -->
+    <div class="modal fade" id="editLocationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-location-form">
+                        <input type="hidden" name="originalName">
+                        <div class="mb-3">
+                            <label class="form-label">Location Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="academic">Academic</option>
+                                <option value="sports">Sports</option>
+                                <option value="facilities">Facilities</option>
+                                <option value="dining">Dining</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Coordinates</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="latitude" placeholder="Latitude" required>
+                                <input type="text" class="form-control" name="longitude" placeholder="Longitude" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Operating Hours</label>
+                            <input type="text" class="form-control" name="hours" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contact Information</label>
+                            <input type="text" class="form-control" name="contact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditLocationForm()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div class="modal fade" id="addCourseModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Course</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-course-form">
+                        <div class="mb-3">
+                            <label class="form-label">Course Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category" required>
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="postgraduate">Postgraduate</option>
+                                <option value="engineering">Engineering</option>
+                                <option value="management">Management</option>
+                                <option value="law">Law</option>
+                                <option value="science">Science</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duration</label>
+                            <input type="text" class="form-control" name="duration" placeholder="e.g., 4 Years" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Specializations</label>
+                            <div id="specializations-container">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" name="specializations[]">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeSpecialization(this)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSpecialization()">
+                                <i class="fas fa-plus"></i> Add Specialization
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCourseForm()">Add Course</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check admin authentication
+        window.addEventListener('load', () => {
+            const isAdminLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
+            if (!isAdminLoggedIn) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const adminUsername = sessionStorage.getItem('adminUsername');
+            document.getElementById('admin-name').textContent = adminUsername;
+            
+            // Load initial data
+            loadLocations();
+            loadReviews();
+            loadEvents();
+        });
+
+        function logout() {
+            sessionStorage.removeItem('isAdminLoggedIn');
+            sessionStorage.removeItem('adminUsername');
+            window.location.href = 'login.html';
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+        }
+
+        function loadLocations() {
+            const locationsList = document.getElementById('locations-list');
+            // Fetch locations from campusData in campusmap.html
+            fetch('../ramaiah/campusmap.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const script = Array.from(doc.scripts).find(script => script.textContent.includes('campusData'));
+                    
+                    if (script) {
+                        eval(script.textContent);
+                        
+                        locationsList.innerHTML = '';
+                        Object.entries(campusData).forEach(([name, data]) => {
+                            const card = document.createElement('div');
+                            card.className = 'location-card';
+                            card.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5>${name}</h5>
+                                        <p class="text-muted mb-2">${data.category}</p>
+                                        <p>${data.description}</p>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editLocation('${name}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteLocation('${name}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            locationsList.appendChild(card);
+                        });
+                    }
+                });
+        }
+
+        function loadReviews() {
+            const reviewsList = document.getElementById('reviews-list');
+            // Sample reviews data
+            const reviews = [
+                {
+                    id: 1,
+                    user: "John Doe",
+                    location: "Library",
+                    rating: 4,
+                    comment: "Great study environment and helpful staff.",
+                    status: "approved",
+                    date: "2024-03-15"
+                },
+                {
+                    id: 2,
+                    user: "Jane Smith",
+                    location: "Cafeteria",
+                    rating: 3,
+                    comment: "Good food but can get crowded during peak hours.",
+                    status: "pending",
+                    date: "2024-03-14"
+                }
+            ];
+
+            reviewsList.innerHTML = '';
+            reviews.forEach(review => {
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <div class="user-info">
+                        <img src="https://ui-avatars.com/api/?name=${review.user}&background=random" alt="${review.user}">
+                        <div>
+                            <h6>${review.user}</h6>
+                            <small class="text-muted">${review.date}</small>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>${review.location}</strong>
+                        <div>Rating: ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                    </div>
+                    <p>${review.comment}</p>
+                    <div class="action-buttons">
+                        ${review.status === 'pending' ? `
+                            <button class="btn btn-sm btn-success" onclick="approveReview(${review.id})">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectReview(${review.id})">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        ` : `
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteReview(${review.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        `}
+                    </div>
+                `;
+                reviewsList.appendChild(card);
+            });
+        }
+
+        function loadEvents() {
+            // Implementation for loading events
+        }
+
+        function showAddLocationModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addLocationModal'));
+            document.getElementById('add-location-form').reset();
+            modal.show();
+        }
+
+        function loadCollegeLocations() {
+            const college = document.getElementById('collegeMapSelect').value;
+            const locationsList = document.getElementById('locations-list');
+            
+            // Fetch locations from the selected college's campus map file
+            fetch(`../${college}/campusmap.html`)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const script = Array.from(doc.scripts).find(script => script.textContent.includes('campusData'));
+                    
+                    if (script) {
+                        eval(script.textContent);
+                        
+                        locationsList.innerHTML = '';
+                        Object.entries(campusData).forEach(([name, data]) => {
+                            const card = document.createElement('div');
+                            card.className = 'location-card';
+                            card.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5>${name}</h5>
+                                        <p class="text-muted mb-2">${data.category || 'N/A'}</p>
+                                        <p class="mb-2">${data.description || ''}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt"></i> ${data.coordinates.join(', ')}
+                                        </small><br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> ${data.hours || 'N/A'}
+                                        </small><br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-phone"></i> ${data.contact || 'N/A'}
+                                        </small>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editLocation('${name}', ${JSON.stringify(data).replace(/"/g, '&quot;')})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteLocation('${name}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            locationsList.appendChild(card);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading locations:', error);
+                    locationsList.innerHTML = '<p class="text-danger">Error loading locations. Please try again.</p>';
+                });
+        }
+
+        async function submitLocationForm() {
+            const form = document.getElementById('add-location-form');
+            const formData = new FormData(form);
+            const college = document.getElementById('collegeMapSelect').value;
+            
+            const locationData = {
+                name: formData.get('name'),
+                category: formData.get('category'),
+                coordinates: [
+                    parseFloat(formData.get('latitude')),
+                    parseFloat(formData.get('longitude'))
+                ],
+                description: formData.get('description'),
+                hours: formData.get('hours'),
+                contact: formData.get('contact')
+            };
+            
+            try {
+                const response = await fetch(`../${college}/campusmap.html`);
+                const html = await response.text();
+                
+                // Extract campusData
+                const startMarker = 'const campusData = {';
+                const endMarker = '};';
+                const startIndex = html.indexOf(startMarker);
+                const endIndex = html.indexOf(endMarker, startIndex) + endMarker.length;
+                
+                const beforeData = html.substring(0, startIndex);
+                const afterData = html.substring(endIndex);
+                
+                // Update campusData
+                const currentData = eval('(' + html.substring(startIndex, endIndex) + ')');
+                currentData[locationData.name] = {
+                    coordinates: locationData.coordinates,
+                    category: locationData.category,
+                    description: locationData.description,
+                    hours: locationData.hours,
+                    contact: locationData.contact
+                };
+                
+                // Create updated file content
+                const updatedContent = beforeData + 
+                    'const campusData = ' + 
+                    JSON.stringify(currentData, null, 4) +
+                    afterData;
+                
+                // Save the file
+                await fetch('/api/save-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        path: `../${college}/campusmap.html`,
+                        content: updatedContent
+                    })
+                });
+                
+                bootstrap.Modal.getInstance(document.getElementById('addLocationModal')).hide();
+                loadCollegeLocations();
+                alert('Location added successfully!');
+            } catch (error) {
+                console.error('Error saving location:', error);
+                alert('Error saving location. Please try again.');
+            }
+        }
+
+        function editLocation(name, data) {
+            const form = document.getElementById('edit-location-form');
+            form.elements.originalName.value = name;
+            form.elements.name.value = name;
+            form.elements.category.value = data.category;
+            form.elements.latitude.value = data.coordinates[0];
+            form.elements.longitude.value = data.coordinates[1];
+            form.elements.description.value = data.description;
+            form.elements.hours.value = data.hours;
+            form.elements.contact.value = data.contact;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editLocationModal'));
+            modal.show();
+        }
+
+        async function submitEditLocationForm() {
+            const form = document.getElementById('edit-location-form');
+            const formData = new FormData(form);
+            const college = document.getElementById('collegeMapSelect').value;
+            const originalName = formData.get('originalName');
+            
+            const locationData = {
+                name: formData.get('name'),
+                category: formData.get('category'),
+                coordinates: [
+                    parseFloat(formData.get('latitude')),
+                    parseFloat(formData.get('longitude'))
+                ],
+                description: formData.get('description'),
+                hours: formData.get('hours'),
+                contact: formData.get('contact')
+            };
+            
+            try {
+                const response = await fetch(`../${college}/campusmap.html`);
+                const html = await response.text();
+                
+                // Extract and update campusData
+                const startMarker = 'const campusData = {';
+                const endMarker = '};';
+                const startIndex = html.indexOf(startMarker);
+                const endIndex = html.indexOf(endMarker, startIndex) + endMarker.length;
+                
+                const currentData = eval('(' + html.substring(startIndex, endIndex) + ')');
+                
+                // Remove old entry if name changed
+                if (originalName !== locationData.name) {
+                    delete currentData[originalName];
+                }
+                
+                // Add updated entry
+                currentData[locationData.name] = {
+                    coordinates: locationData.coordinates,
+                    category: locationData.category,
+                    description: locationData.description,
+                    hours: locationData.hours,
+                    contact: locationData.contact
+                };
+                
+                const updatedContent = html.substring(0, startIndex) + 
+                    'const campusData = ' + 
+                    JSON.stringify(currentData, null, 4) +
+                    html.substring(endIndex);
+                
+                // Save the file
+                await fetch('/api/save-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        path: `../${college}/campusmap.html`,
+                        content: updatedContent
+                    })
+                });
+                
+                bootstrap.Modal.getInstance(document.getElementById('editLocationModal')).hide();
+                loadCollegeLocations();
+                alert('Location updated successfully!');
+            } catch (error) {
+                console.error('Error updating location:', error);
+                alert('Error updating location. Please try again.');
+            }
+        }
+
+        async function deleteLocation(name) {
+            if (confirm(`Are you sure you want to delete ${name}?`)) {
+                const college = document.getElementById('collegeMapSelect').value;
+                try {
+                    const response = await fetch(`../${college}/campusmap.html`);
+                    const html = await response.text();
+                    
+                    // Extract and update campusData
+                    const startMarker = 'const campusData = {';
+                    const endMarker = '};';
+                    const startIndex = html.indexOf(startMarker);
+                    const endIndex = html.indexOf(endMarker, startIndex) + endMarker.length;
+                    
+                    const currentData = eval('(' + html.substring(startIndex, endIndex) + ')');
+                    delete currentData[name];
+                    
+                    const updatedContent = html.substring(0, startIndex) + 
+                        'const campusData = ' + 
+                        JSON.stringify(currentData, null, 4) +
+                        html.substring(endIndex);
+                    
+                    // Save the file
+                    await fetch('/api/save-file', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            path: `../${college}/campusmap.html`,
+                            content: updatedContent
+                        })
+                    });
+                    
+                    loadCollegeLocations();
+                    alert(`Deleted location: ${name}`);
+                } catch (error) {
+                    console.error('Error deleting location:', error);
+                    alert('Error deleting location. Please try again.');
+                }
+            }
+        }
+
+        function filterReviews(status) {
+            // Implementation for filtering reviews
+            loadReviews();
+        }
+
+        async function loadCollegeContent() {
+            const college = document.getElementById('collegeSelect').value;
+            try {
+                const response = await fetch(`../${college}/dashboard.html`);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Load about content
+                const aboutSection = doc.querySelector('.card p');
+                document.getElementById('aboutContent').value = aboutSection.textContent.trim();
+
+                // Load contact information
+                const phone = doc.querySelector('.info-item .fas.fa-phone').nextElementSibling.textContent.trim();
+                const email = doc.querySelector('.info-item .fas.fa-envelope').nextElementSibling.textContent.trim();
+                const address = doc.querySelector('.info-item .fas.fa-map-marker-alt').nextElementSibling.textContent.trim();
+
+                document.getElementById('phone').value = phone;
+                document.getElementById('email').value = email;
+                document.getElementById('address').value = address;
+
+                // Load schools
+                const schools = Array.from(doc.querySelectorAll('.card ul li')).map(li => li.textContent.trim());
+                const schoolsList = document.getElementById('schoolsList');
+                schoolsList.innerHTML = schools.map(school => `
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" value="${school}">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+
+                // Load facilities
+                const facilities = Array.from(doc.querySelectorAll('.facilities-grid .facility-item')).map(item => item.textContent.trim());
+                const facilitiesList = document.getElementById('facilitiesList');
+                facilitiesList.innerHTML = facilities.map(facility => `
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" value="${facility}">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading college content:', error);
+                alert('Error loading college content. Please try again.');
+            }
+        }
+
+        async function saveCollegeContent() {
+            const college = document.getElementById('collegeSelect').value;
+            const aboutContent = document.getElementById('aboutContent').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+
+            const schools = Array.from(document.querySelectorAll('#schoolsList input')).map(input => input.value);
+            const facilities = Array.from(document.querySelectorAll('#facilitiesList input')).map(input => input.value);
+
+            try {
+                const response = await fetch(`../${college}/dashboard.html`);
+                const html = await response.text();
+                
+                // Update content
+                let updatedHtml = html;
+                updatedHtml = updatedHtml.replace(
+                    /<p style="color: #666; line-height: 1.6; margin-bottom: 1rem;">(.*?)<\/p>/s,
+                    `<p style="color: #666; line-height: 1.6; margin-bottom: 1rem;">${aboutContent}</p>`
+                );
+
+                // Save the updated file
+                await fetch('/api/save-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        path: `../${college}/dashboard.html`,
+                        content: updatedHtml
+                    })
+                });
+
+                bootstrap.Modal.getInstance(document.getElementById('editCollegeModal')).hide();
+                alert('College content updated successfully!');
+            } catch (error) {
+                console.error('Error saving college content:', error);
+                alert('Error saving college content. Please try again.');
+            }
+        }
+
+        function addSchool() {
+            const schoolsList = document.getElementById('schoolsList');
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="School name">
+                <button class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            schoolsList.appendChild(div);
+        }
+
+        function addFacility() {
+            const facilitiesList = document.getElementById('facilitiesList');
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Facility name">
+                <button class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            facilitiesList.appendChild(div);
+        }
+
+        function showEditCollegeModal() {
+            const modal = new bootstrap.Modal(document.getElementById('editCollegeModal'));
+            loadCollegeContent(); // Load content for the first college
+            modal.show();
+        }
+
+        // Show dashboard section by default
+        showSection('dashboard');
+    </script>
+</body>
+</html>

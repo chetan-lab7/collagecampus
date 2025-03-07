@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramaiah University Facilities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a2a6c;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            padding: 2rem;
+            color: white;
+            z-index: 100;
+        }
+
+        .college-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .college-logo img {
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+
+        .nav-links i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            color: #1a2a6c;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #666;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .back-btn {
+            padding: 0.5rem 1rem;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #b21f1f;
+        }
+
+        .facilities-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .facility-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .facility-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .facility-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .facility-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .facility-card:hover .facility-image img {
+            transform: scale(1.05);
+        }
+
+        .facility-details {
+            padding: 1.5rem;
+        }
+
+        .facility-details h3 {
+            color: #1a2a6c;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .facility-details p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .facility-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .feature-tag {
+            background: #f0f2f5;
+            color: #1a2a6c;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .facility-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .facility-hours {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .view-more-btn {
+            padding: 0.5rem 1rem;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .view-more-btn:hover {
+            background: #b21f1f;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .college-logo, .nav-links span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 80px;
+            }
+
+            .nav-links i {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .facilities-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="college-logo">
+            <img src="../assets/ramaiah_logo.png" alt="Ramaiah University">
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i><span>Overview</span></a></li>
+            <li><a href="campusmap.html"><i class="fas fa-map-marked-alt"></i><span>Campus Map</span></a></li>
+            <li><a href="events.html"><i class="fas fa-calendar-alt"></i><span>Events</span></a></li>
+            <li><a href="facilities.html" class="active"><i class="fas fa-building"></i><span>Facilities</span></a></li>
+            <li><a href="courses.html"><i class="fas fa-graduation-cap"></i><span>Courses</span></a></li>
+            <li><a href="reviews.html"><i class="fas fa-star"></i><span>Reviews</span></a></li>
+            <li><a href="../../landing.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
+                <span>Welcome to Ramaiah University!</span>
+            </div>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="page-title">
+            <h1>Campus Facilities</h1>
+            <p>Explore the state-of-the-art facilities available at Ramaiah University</p>
+        </div>
+
+        <div class="facilities-container">
+            <!-- Library -->
+            <div class="facility-card">
+                <div class="facility-image">
+                    <img src="images/library.jpg" alt="Central Library" loading="lazy">
+                </div>
+                <div class="facility-details">
+                    <h3><i class="fas fa-book"></i> Central Library</h3>
+                    <p>A modern library with extensive collection of books, journals, and digital resources. Features quiet study spaces, discussion rooms, and multimedia facilities.</p>
+                    <div class="facility-features">
+                        <span class="feature-tag">Digital Resources</span>
+                        <span class="feature-tag">Study Rooms</span>
+                        <span class="feature-tag">Wi-Fi</span>
+                        <span class="feature-tag">Research Journals</span>
+                    </div>
+                    <div class="facility-footer">
+                        <div class="facility-hours">
+                            <i class="far fa-clock"></i> 8 AM - 8 PM
+                        </div>
+                        <a href="#" class="view-more-btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Laboratories -->
+            <div class="facility-card">
+                <div class="facility-image">
+                    <img src="images/laboratories.jpg" alt="Research Laboratories" loading="lazy">
+                </div>
+                <div class="facility-details">
+                    <h3><i class="fas fa-flask"></i> Research Laboratories</h3>
+                    <p>State-of-the-art laboratories equipped with modern instruments and technology for research and practical learning across various disciplines.</p>
+                    <div class="facility-features">
+                        <span class="feature-tag">Advanced Equipment</span>
+                        <span class="feature-tag">Research Facilities</span>
+                        <span class="feature-tag">Safety Protocols</span>
+                        <span class="feature-tag">Expert Guidance</span>
+                    </div>
+                    <div class="facility-footer">
+                        <div class="facility-hours">
+                            <i class="far fa-clock"></i> 9 AM - 5 PM
+                        </div>
+                        <a href="#" class="view-more-btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sports Complex -->
+            <div class="facility-card">
+                <div class="facility-image">
+                    <img src="images/sports%20.jpg" alt="Sports Complex" loading="lazy">
+                </div>
+                <div class="facility-details">
+                    <h3><i class="fas fa-running"></i> Sports Complex</h3>
+                    <p>Comprehensive sports facilities including indoor and outdoor courts, fitness center, and training areas for various sports activities.</p>
+                    <div class="facility-features">
+                        <span class="feature-tag">Indoor Courts</span>
+                        <span class="feature-tag">Fitness Center</span>
+                        <span class="feature-tag">Training Areas</span>
+                        <span class="feature-tag">Professional Coaches</span>
+                    </div>
+                    <div class="facility-footer">
+                        <div class="facility-hours">
+                            <i class="far fa-clock"></i> 6 AM - 9 PM
+                        </div>
+                        <a href="#" class="view-more-btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canteen -->
+            <div class="facility-card">
+                <div class="facility-image">
+                    <img src="images/canteen.jpg" alt="Campus Canteen" loading="lazy">
+                </div>
+                <div class="facility-details">
+                    <h3><i class="fas fa-utensils"></i> Campus Canteen</h3>
+                    <p>Modern cafeteria offering a variety of nutritious and delicious food options, with comfortable seating and hygienic food preparation facilities.</p>
+                    <div class="facility-features">
+                        <span class="feature-tag">Multiple Cuisines</span>
+                        <span class="feature-tag">Hygienic Kitchen</span>
+                        <span class="feature-tag">Comfortable Seating</span>
+                        <span class="feature-tag">Quick Service</span>
+                    </div>
+                    <div class="facility-footer">
+                        <div class="facility-hours">
+                            <i class="far fa-clock"></i> 7:30 AM - 6 PM
+                        </div>
+                        <a href="#" class="view-more-btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'ramaiah') {
+                window.location.href = '../index.html';
+            }
+        });
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('selectedCollege');
+            window.location.href = '../../landing.html';
+        }
+    </script>
+</body>
+</html>

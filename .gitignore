@@ -1,0 +1,39 @@
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Build output (if applicable)
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE or Editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*~
+*.bak
+
+# Other files
+*.swp
+*.swo
+
+# Images and media files (if you have a separate folder for uploads)
+uploads/

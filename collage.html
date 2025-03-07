@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Map with Search & Navigation</title>
+    <style>
+        body, html { margin: 0; height: 100%; text-align: center; font-family: Arial, sans-serif; }
+        #map-container { width: 100%; height: 80vh; }
+        h2 { text-align: center; color: #412cff; }
+        #controls { padding: 10px; background: #eeeeee; color: rgb(3, 3, 3); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        input, select, button { padding: 8px; margin: 5px; font-size: 16px; width: 80%; max-width: 400px; }
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Campus Map </h2>
+ 
+
+    <div id="controls">
+        <!-- Search for a building -->
+        <input type="text" id="search-box" placeholder="Enter building name">
+        <button onclick="searchBuilding()">Search</button>
+
+        <!-- Navigation dropdown -->
+        <label for="destination">Select Destination:</label>
+        <select id="destination">
+            <option value="">-- Choose a Location --</option>
+            <option value="13.118932349822783, 77.65562801534288">CMR University main gate</option>
+            <option value="13.11785, 77.65538">CMRU basketball court</option>
+            <option value="13.11783, 77.65569">FOOTBALL GROUND</option>
+            <option value="13.11796, 77.65607">CMR UNIVERSITY indore sports</option>
+            <option value="13.1199, 77.65669">Girls hostel 1</option>
+            <option value="13.11829, 77.65791">Science and humanities block</option>
+            <option value="13.11729, 77.65958">CMRU GYM</option>
+            <option value="13.11888, 77.65993">CMRU CANTEEN</option>
+            <option value="13.11899, 77.66062">CMRU SOET</option>
+            <option value="13.11914, 77.66169">Bike Parking</option>
+            <option value="13.11928, 77.66263">CMR UNIVERSITY back gate</option>
+           
+        </select>
+        <button onclick="navigate()">Get Directions</button>
+    </div>
+
+    <!-- Embedded Google My Maps -->
+    <div id="map-container">
+        <iframe id="mapFrame" 
+            src="https://www.google.com/maps/d/u/0/embed?mid=1ru8UlAfr8VJ9hRpw2VXvOyitWmXSu60&ehbc=2E312F" 
+            width="100%" 
+            height="100%" 
+            style="border:0;">
+        </iframe>
+    </div>
+
+    <script>
+        function searchBuilding() {
+            var building = document.getElementById("search-box").value;
+            if (!building) {
+                alert("Please enter a building name.");
+                return;
+            }
+
+            // Open Google Maps in a new tab with the searched building
+            var googleMapsSearchURL = `https://www.google.com/maps/search/${encodeURIComponent(building)}+near+CMR unviersity lakeside campus`;
+            window.open(googleMapsSearchURL, "_blank");
+        }
+
+        function navigate() {
+            var destination = document.getElementById("destination").value;
+            if (!destination) {
+                alert("Please select a destination.");
+                return;
+            }
+
+            // Get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var startLat = position.coords.latitude;
+                    var startLng = position.coords.longitude;
+                    
+                    // Open Google Maps with real-time directions
+                    var googleMapsURL = `https://www.google.com/maps/dir/${startLat},${startLng}/${destination}`;
+                    window.open(googleMapsURL, "_blank");
+                }, function(error) {
+                    alert("Error getting location. Please enable GPS.");
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+    </script>
+
+</body>
+</html>

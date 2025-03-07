@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R.V. College of Engineering Campus Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a2a6c;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .container {
+            padding: 2rem;
+        }
+
+        .map-container {
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        #campus-map {
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #95a5a6;
+        }
+
+        .building-info {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs-container {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            display: inline-block;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid #1a2a6c;
+            color: #1a2a6c;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .building-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .location-card {
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .location-card:hover {
+            background-color: rgba(26, 42, 108, 0.1);
+        }
+
+        .facility-badge {
+            background-color: #f0f2f5;
+            color: #1a2a6c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        .event-time {
+            color: #b21f1f;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+            
+            .building-info {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/rvce_logo.png" alt="R.V. College of Engineering">
+                R.V. College of Engineering Campus Map
+            </a>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="search-box">
+                    <span class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="location-search" class="form-control" placeholder="Search for buildings, facilities...">
+                </div>
+                <div class="map-container">
+                    <div id="campus-map"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div id="building-info" class="building-info card">
+                    <div class="card-body">
+                        <h4 id="building-title" class="card-title">Select a Building</h4>
+                        <p id="building-description" class="text-muted mb-3">Click on any building on the map to see more details.</p>
+                        
+                        <div id="building-details" style="display: none;">
+                            <img id="building-image" class="building-image" src="" alt="Building Image">
+                            
+                            <div class="tabs-container">
+                                <div class="tab active" data-tab="info">Information</div>
+                                <div class="tab" data-tab="facilities">Facilities</div>
+                                <div class="tab" data-tab="events">Events</div>
+                            </div>
+                            
+                            <div id="info-tab" class="tab-content active">
+                                <p id="building-full-description"></p>
+                                <p><strong>Hours:</strong> <span id="building-hours"></span></p>
+                                <p><strong>Contact:</strong> <span id="building-contact"></span></p>
+                            </div>
+                            
+                            <div id="facilities-tab" class="tab-content">
+                                <div id="building-facilities"></div>
+                            </div>
+                            
+                            <div id="events-tab" class="tab-content">
+                                <div id="building-events"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Campus Locations</h5>
+                        <div id="locations-list">
+                            <!-- Location cards will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    
+    <!-- Main JS -->
+    <script>
+        // R.V. College of Engineering Campus data
+        const campusData = {
+            buildings: [
+                {
+                    id: 1,
+                    name: "Main Building",
+                    coordinates: [12.92372, 77.4987],
+                    category: "academic",
+                    description: "Main administrative and academic building of R.V. College of Engineering",
+                    fullDescription: "The Main Building is the central hub of R.V. College of Engineering. It houses administrative offices, classrooms, and several department facilities. This iconic building is the first point of contact for visitors to the campus and serves as the headquarters for various institutional activities.",
+                    hours: "Monday-Friday: 8:00 AM - 6:00 PM, Saturday: 9:00 AM - 1:00 PM, Sunday: Closed",
+                    contact: "info@rvce.edu.in | (080) 6717 8021",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Administrative Offices", "Classrooms", "Conference Hall", "Principal's Office"],
+                    events: [
+                        {
+                            name: "Orientation Program",
+                            date: "March 15, 2025",
+                            time: "10:00 AM - 2:00 PM",
+                            location: "Auditorium"
+                        },
+                        {
+                            name: "Alumni Meet",
+                            date: "March 20, 2025",
+                            time: "11:00 AM - 5:00 PM",
+                            location: "Main Auditorium"
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "Mingos Cafe Main Canteen",
+                    coordinates: [12.92231, 77.49957],
+                    category: "dining",
+                    description: "Main cafeteria serving a variety of food options for students and faculty",
+                    fullDescription: "Mingos Cafe is the primary dining facility at RVCE campus. It offers a wide range of food options including South Indian, North Indian, and Continental cuisines at student-friendly prices. The cafe has both indoor and outdoor seating areas and serves breakfast, lunch, and dinner throughout the week.",
+                    hours: "Monday-Saturday: 7:30 AM - 8:30 PM, Sunday: 8:00 AM - 8:00 PM",
+                    contact: "canteen@rvce.edu.in | (080) 6717 8030",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Indoor Dining Area", "Outdoor Seating", "Multiple Food Counters", "Snack Corner"],
+                    events: [
+                        {
+                            name: "Food Festival",
+                            date: "March 24, 2025",
+                            time: "12:00 PM - 8:00 PM",
+                            location: "Canteen Area"
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "Library And Information Centre",
+                    coordinates: [12.92327, 77.50074],
+                    category: "library",
+                    description: "Central library with extensive collection of books, journals, and digital resources",
+                    fullDescription: "The RVCE Library and Information Centre is a state-of-the-art facility that houses an extensive collection of books, journals, e-resources, and other educational materials. It provides a quiet study environment with individual and group study spaces. The library is equipped with computers for research and a digital repository of academic resources including subscription to major international journals and databases.",
+                    hours: "Monday-Friday: 8:00 AM - 8:00 PM, Saturday: 9:00 AM - 5:00 PM, Sunday: Closed",
+                    contact: "library@rvce.edu.in | (080) 6717 8025",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Reading Halls", "Digital Resource Center", "Group Study Rooms", "Reference Section"],
+                    events: [
+                        {
+                            name: "Book Exhibition",
+                            date: "March 18, 2025",
+                            time: "9:00 AM - 5:00 PM",
+                            location: "Library Ground Floor"
+                        },
+                        {
+                            name: "Research Workshop",
+                            date: "March 22, 2025",
+                            time: "10:00 AM - 1:00 PM",
+                            location: "Library Seminar Hall"
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "Electronics And Communication Seminar Hall",
+                    coordinates: [12.92393, 77.50025],
+                    category: "academic",
+                    description: "Seminar hall dedicated to the Electronics and Communication Engineering department",
+                    fullDescription: "The Electronics and Communication Seminar Hall is a modern facility equipped with advanced presentation technology. It hosts departmental seminars, guest lectures, and student presentations for the ECE department. The hall can accommodate up to 120 students and features excellent acoustics and multimedia capabilities.",
+                    hours: "Monday-Friday: 9:00 AM - 5:00 PM, Saturday: By reservation only, Sunday: Closed",
+                    contact: "ece@rvce.edu.in | (080) 6717 8040",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Advanced Projection System", "Sound System", "Seating for 120", "Presentation Podium"],
+                    events: [
+                        {
+                            name: "Guest Lecture on 5G Technologies",
+                            date: "March 17, 2025",
+                            time: "2:00 PM - 4:00 PM",
+                            location: "ECE Seminar Hall"
+                        },
+                        {
+                            name: "Project Exhibition",
+                            date: "March 25, 2025",
+                            time: "10:00 AM - 4:00 PM",
+                            location: "ECE Department"
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: "Computer Science & Engineering",
+                    coordinates: [12.9246, 77.50038],
+                    category: "academic",
+                    description: "Home to the Computer Science and Engineering department",
+                    fullDescription: "The Computer Science & Engineering building houses state-of-the-art computer labs, classrooms, and faculty offices. It includes specialized labs for artificial intelligence, data science, networking, and software development. The department is known for its cutting-edge research facilities and industry-standard computing resources.",
+                    hours: "Monday-Friday: 8:00 AM - 6:00 PM, Saturday: 9:00 AM - 1:00 PM, Sunday: Closed",
+                    contact: "cse@rvce.edu.in | (080) 6717 8050",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Computer Labs", "Software Development Center", "Research Labs", "Project Rooms"],
+                    events: [
+                        {
+                            name: "Hackathon 2025",
+                            date: "March 28-29, 2025",
+                            time: "24 Hours",
+                            location: "CSE Building"
+                        },
+                        {
+                            name: "Technical Symposium",
+                            date: "March 15, 2025",
+                            time: "9:00 AM - 5:00 PM",
+                            location: "CSE Department"
+                        }
+                    ]
+                },
+                {
+                    id: 6,
+                    name: "Parking Lot",
+                    coordinates: [12.92468, 77.49927],
+                    category: "services",
+                    description: "Main parking area for students, faculty, and visitors",
+                    fullDescription: "The RVCE Parking Lot provides organized parking space for two-wheelers and four-wheelers. It is monitored by security personnel and has designated areas for faculty, students, and visitors. The parking area is well-lit and secured with CCTV cameras for vehicle safety.",
+                    hours: "Monday-Saturday: 6:00 AM - 10:00 PM, Sunday: 8:00 AM - 8:00 PM",
+                    contact: "security@rvce.edu.in | (080) 6717 8060",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Two-wheeler Parking", "Four-wheeler Parking", "Security Booth", "CCTV Surveillance"],
+                    events: []
+                },
+                {
+                    id: 7,
+                    name: "RVCE Main Ground",
+                    coordinates: [12.92509, 77.49998],
+                    category: "sports",
+                    description: "Large multi-purpose ground for sports and cultural events",
+                    fullDescription: "The RVCE Main Ground is a spacious outdoor area used for various sporting activities including cricket, football, and athletics. It also serves as the venue for large-scale college events like the annual cultural fest, graduation ceremonies, and sports tournaments. The ground has a well-maintained turf and is surrounded by a jogging track.",
+                    hours: "Daily: 5:00 AM - 9:00 PM",
+                    contact: "sports@rvce.edu.in | (080) 6717 8070",
+                    image: "/api/placeholder/400/320",
+                    facilities: ["Cricket Pitch", "Football Field", "Athletics Track", "Spectator Areas"],
+                    events: [
+                        {
+                            name: "Inter-College Sports Meet",
+                            date: "March 15-17, 2025",
+                            time: "All Day",
+                            location: "Main Ground"
+                        },
+                        {
+                            name: "Annual Cultural Festival",
+                            date: "March 30-31, 2025",
+                            time: "10:00 AM - 10:00 PM",
+                            location: "Main Ground"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Initialize the map
+        let map;
+        let markers = [];
+        let activeMarkerId = null;
+        
+        function initMap() {
+            // Create map centered on R.V. College of Engineering Campus
+            map = L.map('campus-map').setView([12.92372, 77.4987], 17);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add buildings to map
+            campusData.buildings.forEach(building => {
+                const marker = L.marker(building.coordinates)
+                    .addTo(map)
+                    .bindPopup(`<b>${building.name}</b><br>${building.description}`);
+                
+                marker.buildingId = building.id;
+                marker.on('click', function() {
+                    showBuildingDetails(building.id);
+                    activeMarkerId = building.id;
+                    
+                    // Highlight active marker
+                    markers.forEach(m => {
+                        if (m.buildingId === activeMarkerId) {
+                            m.openPopup();
+                        } else {
+                            m.closePopup();
+                        }
+                    });
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Create location list
+            createLocationsList();
+        }
+        
+        function showBuildingDetails(buildingId) {
+            const building = campusData.buildings.find(b => b.id === buildingId);
+            
+            if (!building) return;
+            
+            // Set building details
+            document.getElementById('building-title').textContent = building.name;
+            document.getElementById('building-description').textContent = building.description;
+            document.getElementById('building-full-description').textContent = building.fullDescription;
+            document.getElementById('building-hours').textContent = building.hours;
+            document.getElementById('building-contact').textContent = building.contact;
+            document.getElementById('building-image').src = building.image;
+            document.getElementById('building-image').alt = building.name;
+            
+            // Show building details section
+            document.getElementById('building-details').style.display = 'block';
+            
+            // Set facilities
+            const facilitiesContainer = document.getElementById('building-facilities');
+            facilitiesContainer.innerHTML = '';
+            
+            if (building.facilities && building.facilities.length > 0) {
+                building.facilities.forEach(facility => {
+                    const badge = document.createElement('span');
+                    badge.className = 'facility-badge';
+                    badge.textContent = facility;
+                    facilitiesContainer.appendChild(badge);
+                });
+            } else {
+                facilitiesContainer.innerHTML = '<p>No facilities information available.</p>';
+            }
+            
+            // Set events
+            const eventsContainer = document.getElementById('building-events');
+            eventsContainer.innerHTML = '';
+            
+            if (building.events && building.events.length > 0) {
+                building.events.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'mb-3';
+                    eventDiv.innerHTML = `
+                        <h6>${event.name}</h6>
+                        <p class="mb-1"><span class="event-time">${event.date}, ${event.time}</span></p>
+                        <p class="mb-0 text-muted">Location: ${event.location}</p>
+                    `;
+                    eventsContainer.appendChild(eventDiv);
+                });
+            } else {
+                eventsContainer.innerHTML = '<p>No upcoming events at this location.</p>';
+            }
+            
+            // Set active tab to info
+            setActiveTab('info');
+        }
+        
+        function createLocationsList() {
+            const locationsContainer = document.getElementById('locations-list');
+            locationsContainer.innerHTML = '';
+            
+            // Group buildings by category
+            const categories = {};
+            campusData.buildings.forEach(building => {
+                if (!categories[building.category]) {
+                    categories[building.category] = [];
+                }
+                categories[building.category].push(building);
+            });
+            
+            // Create category groups
+            for (const [category, buildings] of Object.entries(categories)) {
+                const categoryName = formatCategoryName(category);
+                
+                const categoryHeader = document.createElement('h6');
+                categoryHeader.className = 'mt-3 mb-2';
+                categoryHeader.textContent = categoryName;
+                locationsContainer.appendChild(categoryHeader);
+                
+                // Create building items
+                buildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 18);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            }
+        }
+        
+        function formatCategoryName(category) {
+            // Convert category-name to Category Name
+            return category.split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+        
+        // Set up search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('location-search');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.length < 2) {
+                    // Reset location list if search is cleared
+                    createLocationsList();
+                    return;
+                }
+                
+                // Filter buildings based on search term
+                const filteredBuildings = campusData.buildings.filter(building => 
+                    building.name.toLowerCase().includes(searchTerm) || 
+                    building.description.toLowerCase().includes(searchTerm) ||
+                    (building.facilities && building.facilities.some(f => f.toLowerCase().includes(searchTerm)))
+                );
+                
+                // Update location list
+                const locationsContainer = document.getElementById('locations-list');
+                locationsContainer.innerHTML = '';
+                
+                if (filteredBuildings.length === 0) {
+                    locationsContainer.innerHTML = '<p>No locations found matching your search.</p>';
+                    return;
+                }
+                
+                // Create search results header
+                const searchHeader = document.createElement('h6');
+                searchHeader.className = 'mt-3 mb-2';
+                searchHeader.textContent = 'Search Results';
+                locationsContainer.appendChild(searchHeader);
+                
+                // Create building items
+                filteredBuildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 18);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            });
+        }
+        
+        // Initialize tabs
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+        }
+        
+        function setActiveTab(tabId) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to selected tab
+            const selectedTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(`${tabId}-tab`);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+        }
+        
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+                return;
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'rv') {
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // Initialize map and other components
+            initMap();
+            setupSearch();
+            initTabs();
+        });
+    </script>
+</body>
+</html>

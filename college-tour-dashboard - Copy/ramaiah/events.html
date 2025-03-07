@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramaiah University Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a2a6c;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            margin-right: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1a2a6c;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background: white;
+            color: #1a2a6c;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-btn.active {
+            background: #1a2a6c;
+            color: white;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .event-content {
+            padding: 20px;
+        }
+
+        .event-date {
+            display: inline-block;
+            background: #1a2a6c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            color: #1a2a6c;
+            margin-bottom: 10px;
+        }
+
+        .event-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .event-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .register-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+        <h1 style="font-size: 18px;">Ramaiah University Events</h1>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Upcoming Events</h1>
+            <p>Discover and participate in various events happening at Ramaiah University</p>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterEvents('all')">All Events</button>
+            <button class="filter-btn" onclick="filterEvents('academic')">Academic</button>
+            <button class="filter-btn" onclick="filterEvents('cultural')">Cultural</button>
+            <button class="filter-btn" onclick="filterEvents('technical')">Technical</button>
+            <button class="filter-btn" onclick="filterEvents('sports')">Sports</button>
+        </div>
+
+        <div class="events-grid" id="eventsGrid">
+            <!-- Events will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Event data
+        const events = [
+            {
+                title: "Research Symposium 2024",
+                date: "March 22, 2024",
+                time: "9:00 AM - 5:00 PM",
+                venue: "Research Block Auditorium",
+                description: "Annual research symposium featuring presentations from various departments and guest lectures from industry experts.",
+                image: "../assets/research_symposium.jpg",
+                category: "academic",
+                organizer: "Research Department",
+                contact: "research@msruas.ac.in"
+            },
+            {
+                title: "Healthcare Summit",
+                date: "March 25, 2024",
+                time: "10:00 AM - 4:00 PM",
+                venue: "Health Sciences Block",
+                description: "A comprehensive healthcare conference focusing on modern medical technologies and practices.",
+                image: "../assets/healthcare_summit.jpg",
+                category: "academic",
+                organizer: "Faculty of Health Sciences",
+                contact: "health@msruas.ac.in"
+            },
+            {
+                title: "Tech Fest 2024",
+                date: "March 30, 2024",
+                time: "All Day",
+                venue: "Engineering Block",
+                description: "Annual technical festival featuring coding competitions, robotics workshops, and technical paper presentations.",
+                image: "../assets/tech_fest.jpg",
+                category: "technical",
+                organizer: "Student Technical Committee",
+                contact: "techfest@msruas.ac.in"
+            },
+            {
+                title: "Cultural Night",
+                date: "April 5, 2024",
+                time: "6:00 PM - 10:00 PM",
+                venue: "Open Air Theatre",
+                description: "A night of music, dance, and theatrical performances by talented students.",
+                image: "../assets/cultural_night.jpg",
+                category: "cultural",
+                organizer: "Cultural Committee",
+                contact: "cultural@msruas.ac.in"
+            },
+            {
+                title: "Sports Meet 2024",
+                date: "April 10-12, 2024",
+                time: "8:00 AM - 6:00 PM",
+                venue: "Sports Complex",
+                description: "Annual sports meet featuring various indoor and outdoor sports competitions.",
+                image: "../assets/sports_meet.jpg",
+                category: "sports",
+                organizer: "Sports Department",
+                contact: "sports@msruas.ac.in"
+            },
+            {
+                title: "Engineering Workshop",
+                date: "April 15, 2024",
+                time: "9:00 AM - 4:00 PM",
+                venue: "Mechanical Engineering Block",
+                description: "Hands-on workshop on latest engineering tools and technologies.",
+                image: "../assets/engineering_workshop.jpg",
+                category: "technical",
+                organizer: "Engineering Department",
+                contact: "engineering@msruas.ac.in"
+            }
+        ];
+
+        // Function to create event card
+        function createEventCard(event) {
+            return `
+                <div class="event-card" data-category="${event.category}">
+                    <img src="${event.image}" alt="${event.title}" class="event-image">
+                    <div class="event-content">
+                        <span class="event-date">${event.date}</span>
+                        <h3 class="event-title">${event.title}</h3>
+                        <p class="event-description">${event.description}</p>
+                        <div class="event-details">
+                            <div class="event-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>${event.time}</span>
+                            </div>
+                            <div class="event-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.venue}</span>
+                            </div>
+                            <div class="event-detail">
+                                <i class="fas fa-user"></i>
+                                <span>${event.organizer}</span>
+                            </div>
+                            <div class="event-detail">
+                                <i class="fas fa-envelope"></i>
+                                <span>${event.contact}</span>
+                            </div>
+                        </div>
+                        <a href="#" class="register-btn">Register Now</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to filter events
+        function filterEvents(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const eventCards = document.querySelectorAll('.event-card');
+            eventCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize events
+        window.addEventListener('load', () => {
+            const eventsGrid = document.getElementById('eventsGrid');
+            events.forEach(event => {
+                eventsGrid.innerHTML += createEventCard(event);
+            });
+
+            // Check if user is logged in
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'ramaiah') {
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
+</body>
+</html> 

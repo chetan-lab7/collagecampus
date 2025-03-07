@@ -1,0 +1,81 @@
+# College Tour Dashboard
+
+## Overview
+The College Tour Dashboard is a web application designed to provide virtual tours, campus maps, and course information for various universities. The application allows administrators to manage content, including locations, reviews, events, and courses, through a user-friendly interface.
+
+## Features
+- **Virtual Tours**: Interactive 360-degree views of campus facilities.
+- **Campus Maps**: Detailed maps with markers for various locations on campus.
+- **Course Management**: Admins can add, edit, and delete courses for each university.
+- **Event Management**: Admins can manage events and reviews.
+- **Responsive Design**: The application is designed to be mobile-friendly.
+
+## Technologies Used
+- HTML, CSS, JavaScript
+- Bootstrap for responsive design
+- Leaflet.js for interactive maps
+- Font Awesome for icons
+- MongoDB for data storage (optional)
+
+## Project Structure
+college-tour-dashboard/
+│
+├── admin/
+│ ├── dashboard.html
+│ ├── manage-maps.html
+│ └── (other admin-related files)
+│
+├── cmr/
+│ ├── campus-map.html
+│ ├── courses.html
+│ ├── facilities.html
+│ ├── 360view.html
+│ └── (other CMR-related files)
+│
+├── rv/
+│ ├── campus-map.html
+│ ├── courses.html
+│ ├── facilities.html
+│ ├── 360view.html
+│ └── (other RV-related files)
+│
+├── ramaiah/
+│ ├── campus-map.html
+│ ├── courses.html
+│ ├── facilities.html
+│ ├── 360view.html
+│ └── (other Ramaiah-related files)
+│
+└── assets/
+├── cmr_logo.png
+├── rv_logo.png
+└── (other assets like images)
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd college-tour-dashboard
+   ```
+
+2. Install dependencies (if applicable):
+   - Ensure you have a web server set up to serve the HTML files.
+   - If using MongoDB, set up your database and configure the connection.
+
+3. Open the `index.html` file in your web browser to view the application.
+
+## Usage
+- **Admin Dashboard**: Access the admin dashboard to manage locations, courses, and events.
+- **Virtual Tours**: Navigate to the virtual tour section to explore the campus.
+- **Campus Maps**: Use the campus map to find locations and view details.
+
+## Contributing
+Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Acknowledgments
+- [Bootstrap](https://getbootstrap.com/) for responsive design.
+- [Leaflet.js](https://leafletjs.com/) for interactive maps.
+- [Font Awesome](https://fontawesome.com/) for icons.

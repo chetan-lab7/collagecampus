@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramaiah Institute - Virtual Tour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            padding: 0.5rem 1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .virtual-tour-section {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: #1a2a6c;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+        }
+
+        .tour-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tour-container iframe {
+            width: 100%;
+            height: 75vh;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .tour-controls {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .tour-controls p {
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tour-controls i {
+            color: #1a2a6c;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar-brand h1 {
+                font-size: 1.2rem;
+            }
+
+            .virtual-tour-section {
+                padding: 1rem;
+            }
+
+            .tour-container iframe {
+                height: 400px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            <img src="../assets/ramaiah_logo.png" alt="Ramaiah Institute">
+            <h1>Virtual Campus Tour</h1>
+        </a>
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </nav>
+
+    <section class="virtual-tour-section">
+        <h2 class="section-title">Experience Ramaiah Institute in 360°</h2>
+        
+        <div class="tour-container">
+            <iframe 
+                src="https://msrit.edu/Turiya360/"
+                webkitAllowFullScreen 
+                mozallowfullscreen 
+                allowfullscreen>
+            </iframe>
+            <div class="tour-controls">
+                <p><i class="fas fa-mouse"></i>Use your mouse or touch to look around</p>
+                <p><i class="fas fa-hand-pointer"></i>Click on hotspots to move between locations</p>
+                <p><i class="fas fa-expand"></i>Click fullscreen for the best experience</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'ramaiah') {
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
+</body>
+</html>

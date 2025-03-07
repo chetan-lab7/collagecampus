@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMR University Campus Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a2a6c;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .container {
+            padding: 2rem;
+        }
+
+        .map-container {
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        #campus-map {
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #95a5a6;
+        }
+
+        .building-info {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs-container {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            display: inline-block;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid #1a2a6c;
+            color: #1a2a6c;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .building-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .location-card {
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .location-card:hover {
+            background-color: rgba(26, 42, 108, 0.1);
+        }
+
+        .facility-badge {
+            background-color: #f0f2f5;
+            color: #1a2a6c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        .event-time {
+            color: #b21f1f;
+            font-weight: 600;
+        }
+
+        .directions-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #1a2a6c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .directions-btn:hover {
+            background: #b21f1f;
+            color: white;
+        }
+
+        /* Floor Map Styles */
+        .floor-map-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .floor-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .floor-btn {
+            padding: 8px 16px;
+            border: 2px solid #1a2a6c;
+            background: white;
+            color: #1a2a6c;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .floor-btn.active {
+            background: #1a2a6c;
+            color: white;
+        }
+
+        .floor-map {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            display: none;
+        }
+
+        .floor-map.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+            
+            .building-info {
+                max-height: none;
+            }
+
+            .floor-map {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/cmr_logo.png" alt="CMR University">
+                CMR University Campus Map
+            </a>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="search-box">
+                    <span class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="location-search" class="form-control" placeholder="Search for buildings, facilities...">
+                </div>
+                <div class="map-container">
+                    <div id="campus-map"></div>
+                </div>
+                
+                <!-- Floor Maps Section -->
+                <div class="floor-map-container">
+                    <h4>Floor Maps</h4>
+                    <div class="floor-buttons">
+                        <button class="floor-btn active" data-floor="1">1st Floor</button>
+                        <button class="floor-btn" data-floor="2">2nd Floor</button>
+                        <button class="floor-btn" data-floor="3">3rd Floor</button>
+                        <button class="floor-btn" data-floor="4">4th Floor</button>
+                        <button class="floor-btn" data-floor="5">5th Floor</button>
+                    </div>
+                    <div class="floor-maps">
+                        <img src="images/first floor.jpg" alt="First Floor Map" class="floor-map active" data-floor="1">
+                        <img src="images/second floor.jpg" alt="Second Floor Map" class="floor-map" data-floor="2">
+                        <img src="images/third floor.jpg" alt="Third Floor Map" class="floor-map" data-floor="3">
+                        <img src="images/fourth floor.jpg" alt="Fourth Floor Map" class="floor-map" data-floor="4">
+                        <img src="images/fifth floor.jpg" alt="Fifth Floor Map" class="floor-map" data-floor="5">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div id="building-info" class="building-info card">
+                    <div class="card-body">
+                        <h4 id="building-title" class="card-title">Select a Building</h4>
+                        <p id="building-description" class="text-muted mb-3">Click on any building on the map to see more details.</p>
+                        
+                        <div id="building-details" style="display: none;">
+                            <img id="building-image" class="building-image" src="" alt="Building Image">
+                            
+                            <div class="tabs-container">
+                                <div class="tab active" data-tab="info">Information</div>
+                                <div class="tab" data-tab="facilities">Facilities</div>
+                                <div class="tab" data-tab="events">Events</div>
+                            </div>
+                            
+                            <div id="info-tab" class="tab-content active">
+                                <p id="building-full-description"></p>
+                                <p><strong>Hours:</strong> <span id="building-hours"></span></p>
+                                <p><strong>Contact:</strong> <span id="building-contact"></span></p>
+                                <button id="get-directions" class="directions-btn" onclick="getDirections()">
+                                    <i class="fas fa-directions"></i> Get Directions
+                                </button>
+                            </div>
+                            
+                            <div id="facilities-tab" class="tab-content">
+                                <div id="building-facilities"></div>
+                            </div>
+                            
+                            <div id="events-tab" class="tab-content">
+                                <div id="building-events"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Campus Locations</h5>
+                        <div id="locations-list">
+                            <!-- Location cards will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    
+    <!-- Main JS -->
+    <script>
+        // CMR University Lakeside Campus data
+        const campusData = {
+            buildings: [
+                {
+                    id: 1,
+                    name: "CMR University Main Gate",
+                    coordinates: [13.118932349822783, 77.65562801534288],
+                    category: "entrance",
+                    description: "Main entrance to CMR University campus",
+                    fullDescription: "The main entrance gate of CMR University, providing secure access to the campus with 24/7 security personnel.",
+                    hours: "24/7 Access",
+                    contact: "Security Office: (080) 2561 4444",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Main+Gate",
+                    facilities: ["Security Post", "CCTV Surveillance", "Visitor Registration", "Information Desk"],
+                    events: []
+                },
+                {
+                    id: 2,
+                    name: "CMRU Basketball Court",
+                    coordinates: [13.11785, 77.65538],
+                    category: "sports",
+                    description: "Professional basketball court for students",
+                    fullDescription: "State-of-the-art basketball court with high-quality flooring and professional equipment. The court hosts regular tournaments and practice sessions.",
+                    hours: "6:00 AM - 9:00 PM",
+                    contact: "Sports Department: sports@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Basketball+Court",
+                    facilities: ["Spectator Seating", "Floodlights", "Equipment Storage", "Water Station"],
+                    events: []
+                },
+                {
+                    id: 3,
+                    name: "Football Ground",
+                    coordinates: [13.11783, 77.65569],
+                    category: "sports",
+                    description: "Regulation-size football field with natural turf",
+                    fullDescription: "Well-maintained football ground with natural grass turf, used for matches, practice sessions, and physical education activities.",
+                    hours: "6:00 AM - 9:00 PM",
+                    contact: "Sports Department: sports@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Football+Ground",
+                    facilities: ["Natural Turf", "Goal Posts", "Running Track", "Floodlights"],
+                    events: []
+                },
+                {
+                    id: 4,
+                    name: "CMR University Indoor Sports",
+                    coordinates: [13.11796, 77.65607],
+                    category: "sports",
+                    description: "Indoor sports complex with multiple facilities",
+                    fullDescription: "Modern indoor sports complex featuring facilities for badminton, table tennis, chess, and other indoor sports activities.",
+                    hours: "8:00 AM - 8:00 PM",
+                    contact: "Indoor Sports: indoorsports@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Indoor+Sports",
+                    facilities: ["Badminton Courts", "Table Tennis", "Chess Room", "Changing Rooms"],
+                    events: []
+                },
+                {
+                    id: 5,
+                    name: "Girls Hostel 1",
+                    coordinates: [13.1199, 77.65669],
+                    category: "residence",
+                    description: "Dedicated hostel facility for female students",
+                    fullDescription: "Secure and comfortable residential facility for female students with modern amenities and 24/7 security.",
+                    hours: "24/7 (Residents Only)",
+                    contact: "Hostel Warden: girlshostel@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Girls+Hostel",
+                    facilities: ["Wi-Fi", "Common Room", "Laundry", "Security"],
+                    events: []
+                },
+                {
+                    id: 6,
+                    name: "Science and Humanities Block",
+                    coordinates: [13.11829, 77.65791],
+                    category: "academic",
+                    description: "Academic block for Science and Humanities departments",
+                    fullDescription: "Houses various science laboratories, classrooms, and faculty offices for the Science and Humanities departments.",
+                    hours: "Monday-Saturday: 8:00 AM - 6:00 PM",
+                    contact: "science@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Science+Block",
+                    facilities: ["Laboratories", "Smart Classrooms", "Research Centers", "Faculty Offices"],
+                    events: []
+                },
+                {
+                    id: 7,
+                    name: "CMRU GYM",
+                    coordinates: [13.11729, 77.65958],
+                    category: "sports",
+                    description: "Modern fitness center with latest equipment",
+                    fullDescription: "Fully equipped gymnasium with cardio machines, weight training equipment, and dedicated trainers.",
+                    hours: "6:00 AM - 9:00 PM",
+                    contact: "gym@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Gymnasium",
+                    facilities: ["Cardio Section", "Weight Training", "Personal Training", "Locker Rooms"],
+                    events: []
+                },
+                {
+                    id: 8,
+                    name: "CMRU CANTEEN",
+                    coordinates: [13.11888, 77.65993],
+                    category: "dining",
+                    description: "Main campus cafeteria with diverse food options",
+                    fullDescription: "Spacious cafeteria serving variety of cuisines including South Indian, North Indian, and Continental dishes.",
+                    hours: "7:30 AM - 8:30 PM",
+                    contact: "canteen@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Canteen",
+                    facilities: ["Food Court", "Seating Area", "Payment Counter", "Vending Machines"],
+                    events: []
+                },
+                {
+                    id: 9,
+                    name: "CMRU SOET",
+                    coordinates: [13.11899, 77.66062],
+                    category: "academic",
+                    description: "School of Engineering and Technology",
+                    fullDescription: "Main building for engineering departments with modern laboratories, classrooms, and research facilities.",
+                    hours: "Monday-Saturday: 8:00 AM - 6:00 PM",
+                    contact: "soet@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=SOET",
+                    facilities: ["Computer Labs", "Workshop", "Seminar Halls", "Department Offices"],
+                    events: []
+                },
+                {
+                    id: 10,
+                    name: "Bike Parking",
+                    coordinates: [13.11914, 77.66169],
+                    category: "facilities",
+                    description: "Designated parking area for two-wheelers",
+                    fullDescription: "Secure parking facility for bikes and scooters with CCTV surveillance and security personnel.",
+                    hours: "6:00 AM - 9:00 PM",
+                    contact: "Security Office: security@cmr.edu.in",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Bike+Parking",
+                    facilities: ["CCTV Surveillance", "Security Guard", "Covered Parking", "Vehicle Tags"],
+                    events: []
+                },
+                {
+                    id: 11,
+                    name: "CMR UNIVERSITY Back Gate",
+                    coordinates: [13.11928, 77.66263],
+                    category: "entrance",
+                    description: "Secondary campus entrance",
+                    fullDescription: "Alternative entrance to the campus with security checkpoint and vehicle verification.",
+                    hours: "6:00 AM - 9:00 PM",
+                    contact: "Security Office: (080) 2561 4444",
+                    image: "https://placehold.co/600x400/1a2a6c/FFF?text=Back+Gate",
+                    facilities: ["Security Post", "CCTV Surveillance", "Vehicle Check", "Security Personnel"],
+                    events: []
+                }
+            ]
+        };
+
+        // Initialize the map
+        let map;
+        let markers = [];
+        let activeMarkerId = null;
+        let selectedBuildingCoords = null;
+        
+        function initMap() {
+            // Create map centered on CMR University Main Gate
+            map = L.map('campus-map').setView([13.118932349822783, 77.65562801534288], 17);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add buildings to map
+            campusData.buildings.forEach(building => {
+                const marker = L.marker(building.coordinates)
+                    .addTo(map)
+                    .bindPopup(`<b>${building.name}</b><br>${building.description}`);
+                
+                marker.buildingId = building.id;
+                marker.on('click', function() {
+                    showBuildingDetails(building.id);
+                    activeMarkerId = building.id;
+                    
+                    // Highlight active marker
+                    markers.forEach(m => {
+                        if (m.buildingId === activeMarkerId) {
+                            m.openPopup();
+                        } else {
+                            m.closePopup();
+                        }
+                    });
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Create location list
+            createLocationsList();
+        }
+        
+        function showBuildingDetails(buildingId) {
+            const building = campusData.buildings.find(b => b.id === buildingId);
+            
+            if (!building) return;
+            
+            // Store selected building coordinates for directions
+            selectedBuildingCoords = building.coordinates;
+            
+            // Set building details
+            document.getElementById('building-title').textContent = building.name;
+            document.getElementById('building-description').textContent = building.description;
+            document.getElementById('building-full-description').textContent = building.fullDescription;
+            document.getElementById('building-hours').textContent = building.hours;
+            document.getElementById('building-contact').textContent = building.contact;
+            document.getElementById('building-image').src = building.image;
+            document.getElementById('building-image').alt = building.name;
+            
+            // Show building details section
+            document.getElementById('building-details').style.display = 'block';
+            
+            // Set facilities
+            const facilitiesContainer = document.getElementById('building-facilities');
+            facilitiesContainer.innerHTML = '';
+            
+            if (building.facilities && building.facilities.length > 0) {
+                building.facilities.forEach(facility => {
+                    const badge = document.createElement('span');
+                    badge.className = 'facility-badge';
+                    badge.textContent = facility;
+                    facilitiesContainer.appendChild(badge);
+                });
+            } else {
+                facilitiesContainer.innerHTML = '<p>No facilities information available.</p>';
+            }
+            
+            // Set events
+            const eventsContainer = document.getElementById('building-events');
+            eventsContainer.innerHTML = '';
+            
+            if (building.events && building.events.length > 0) {
+                building.events.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'mb-3';
+                    eventDiv.innerHTML = `
+                        <h6>${event.name}</h6>
+                        <p class="mb-1"><span class="event-time">${event.date}, ${event.time}</span></p>
+                        <p class="mb-0 text-muted">Location: ${event.location}</p>
+                    `;
+                    eventsContainer.appendChild(eventDiv);
+                });
+            } else {
+                eventsContainer.innerHTML = '<p>No upcoming events at this location.</p>';
+            }
+            
+            // Set active tab to info
+            setActiveTab('info');
+        }
+        
+        function createLocationsList() {
+            const locationsContainer = document.getElementById('locations-list');
+            locationsContainer.innerHTML = '';
+            
+            // Group buildings by category
+            const categories = {};
+            campusData.buildings.forEach(building => {
+                if (!categories[building.category]) {
+                    categories[building.category] = [];
+                }
+                categories[building.category].push(building);
+            });
+            
+            // Create category groups
+            for (const [category, buildings] of Object.entries(categories)) {
+                const categoryName = formatCategoryName(category);
+                
+                const categoryHeader = document.createElement('h6');
+                categoryHeader.className = 'mt-3 mb-2';
+                categoryHeader.textContent = categoryName;
+                locationsContainer.appendChild(categoryHeader);
+                
+                // Create building items
+                buildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 18);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            }
+        }
+        
+        function formatCategoryName(category) {
+            // Convert category-name to Category Name
+            return category.split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+        
+        // Set up search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('location-search');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.length < 2) {
+                    // Reset location list if search is cleared
+                    createLocationsList();
+                    return;
+                }
+                
+                // Filter buildings based on search term
+                const filteredBuildings = campusData.buildings.filter(building => 
+                    building.name.toLowerCase().includes(searchTerm) || 
+                    building.description.toLowerCase().includes(searchTerm) ||
+                    (building.facilities && building.facilities.some(f => f.toLowerCase().includes(searchTerm)))
+                );
+                
+                // Update location list
+                const locationsContainer = document.getElementById('locations-list');
+                locationsContainer.innerHTML = '';
+                
+                if (filteredBuildings.length === 0) {
+                    locationsContainer.innerHTML = '<p>No locations found matching your search.</p>';
+                    return;
+                }
+                
+                // Create search results header
+                const searchHeader = document.createElement('h6');
+                searchHeader.className = 'mt-3 mb-2';
+                searchHeader.textContent = 'Search Results';
+                locationsContainer.appendChild(searchHeader);
+                
+                // Create building items
+                filteredBuildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 18);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            });
+        }
+        
+        // Initialize tabs
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+        }
+        
+        function setActiveTab(tabId) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to selected tab
+            const selectedTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(`${tabId}-tab`);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+        }
+        
+        // Navigation function
+        function getDirections() {
+            if (!selectedBuildingCoords) {
+                alert("Please select a building first.");
+                return;
+            }
+
+            // Get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var startLat = position.coords.latitude;
+                    var startLng = position.coords.longitude;
+                    
+                    // Open Google Maps with real-time directions
+                    var googleMapsURL = `https://www.google.com/maps/dir/${startLat},${startLng}/${selectedBuildingCoords[0]},${selectedBuildingCoords[1]}`;
+                    window.open(googleMapsURL, "_blank");
+                }, function(error) {
+                    alert("Error getting location. Please enable GPS and try again.");
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+        
+        // Floor map functionality
+        function initFloorMaps() {
+            const floorButtons = document.querySelectorAll('.floor-btn');
+            floorButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const floor = button.getAttribute('data-floor');
+                    
+                    // Update button states
+                    floorButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Update floor map visibility
+                    const floorMaps = document.querySelectorAll('.floor-map');
+                    floorMaps.forEach(map => {
+                        if (map.getAttribute('data-floor') === floor) {
+                            map.classList.add('active');
+                        } else {
+                            map.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+                return;
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'cmr') {
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // Initialize map and other components
+            initMap();
+            setupSearch();
+            initTabs();
+            initFloorMaps();
+        });
+    </script>
+</body>
+</html>

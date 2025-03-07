@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Explorer | Your College Tour Guide</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        #map-container {
+            height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #campus-map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .location-card {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .location-card:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #95a5a6;
+        }
+        
+        .facility-badge {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+        
+        .event-time {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 2rem 0;
+        }
+        
+        .footer-heading {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+
+        .building-info {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .tabs-container {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            display: inline-block;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .building-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            #map-container {
+                height: 300px;
+            }
+            
+            .building-info {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Campus Explorer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#campus-tour">Campus Tour</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#facilities">Facilities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#events">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container-fluid py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-bold mb-3">Explore Your Campus Like Never Before</h1>
+                    <p class="lead mb-4">Navigate easily, discover facilities, and never get lost with our interactive campus tour application.</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <a href="#campus-tour" class="btn btn-primary btn-lg px-4 me-md-2">Start Tour</a>
+                        <a href="#features" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <img src="https://source.unsplash.com/random/600x400/?university,campus" class="img-fluid rounded" alt="Campus Image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold">Features</h2>
+                <p class="lead text-muted">Everything you need to navigate the campus efficiently</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                            🗺️
+                        </div>
+                        <h5 class="card-title">Interactive Map</h5>
+                        <p class="card-text">Explore the campus with our detailed interactive map. Find buildings, facilities, and routes with ease.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                            📅
+                        </div>
+                        <h5 class="card-title">Events Calendar</h5>
+                        <p class="card-text">Stay updated with all campus events, schedules, and important dates in one place.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="fas fa-building"></i>
+                            🏛️
+                        </div>
+                        <h5 class="card-title">Facility Locator</h5>
+                        <p class="card-text">Quickly find facilities like cafeterias, libraries, labs, and more with detailed information.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campus Tour Section -->
+    <div id="campus-tour" class="container-fluid py-5 bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="fw-bold">Interactive Campus Tour</h2>
+                    <p class="lead text-muted">Explore the campus and discover all its facilities</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="search-box">
+                        <span class="search-icon">
+                            <i class="fas fa-search">🔍</i>
+                        </span>
+                        <input type="text" id="location-search" class="form-control" placeholder="Search for buildings, facilities...">
+                    </div>
+                    <div id="map-container">
+                        <div id="campus-map"></div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div id="building-info" class="building-info card">
+                        <div class="card-body">
+                            <h4 id="building-title" class="card-title">Select a Building</h4>
+                            <p id="building-description" class="text-muted mb-3">Click on any building on the map to see more details.</p>
+                            
+                            <div id="building-details" style="display: none;">
+                                <img id="building-image" class="building-image" src="" alt="Building Image">
+                                
+                                <div class="tabs-container">
+                                    <div class="tab active" data-tab="info">Information</div>
+                                    <div class="tab" data-tab="facilities">Facilities</div>
+                                    <div class="tab" data-tab="events">Events</div>
+                                </div>
+                                
+                                <div id="info-tab" class="tab-content active">
+                                    <p id="building-full-description"></p>
+                                    <p><strong>Hours:</strong> <span id="building-hours"></span></p>
+                                    <p><strong>Contact:</strong> <span id="building-contact"></span></p>
+                                </div>
+                                
+                                <div id="facilities-tab" class="tab-content">
+                                    <div id="building-facilities"></div>
+                                </div>
+                                
+                                <div id="events-tab" class="tab-content">
+                                    <div id="building-events"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Campus Locations</h5>
+                            <div id="locations-list">
+                                <!-- Location cards will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Facilities Section -->
+    <div id="facilities" class="container py-5">
+        <div class="row mb-4 text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="fw-bold">Campus Facilities</h2>
+                <p class="lead text-muted">Discover all the resources available to you</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/300x200/?library" class="card-img-top" alt="Library">
+                    <div class="card-body">
+                        <h5 class="card-title">Libraries</h5>
+                        <p class="card-text">Our campus features multiple libraries with extensive collections, study spaces, and digital resources.</p>
+                        <a href="#" class="btn btn-sm btn-primary" onclick="filterLocations('library'); return false;">View on Map</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/300x200/?cafeteria" class="card-img-top" alt="Dining">
+                    <div class="card-body">
+                        <h5 class="card-title">Dining Options</h5>
+                        <p class="card-text">Explore various dining options from cafeterias to coffee shops spread across the campus.</p>
+                        <a href="#" class="btn btn-sm btn-primary" onclick="filterLocations('dining'); return false;">View on Map</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/300x200/?gymnasium" class="card-img-top" alt="Sports">
+                    <div class="card-body">
+                        <h5 class="card-title">Sports & Recreation</h5>
+                        <p class="card-text">Stay fit with our state-of-the-art sports facilities including gyms, pools, and playing fields.</p>
+                        <a href="#" class="btn btn-sm btn-primary" onclick="filterLocations('sports'); return false;">View on Map</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Section -->
+    <div id="events" class="container-fluid py-5 bg-light">
+        <div class="container">
+            <div class="row mb-4 text-center">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="fw-bold">Upcoming Events</h2>
+                    <p class="lead text-muted">Stay updated with campus activities and events</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div id="events-container" class="row g-4">
+                    <!-- Events will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-heading">Campus Explorer</h5>
+                    <p>Your comprehensive guide to navigate and explore the campus efficiently.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-heading">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="footer-link">Home</a></li>
+                        <li><a href="#campus-tour" class="footer-link">Campus Tour</a></li>
+                        <li><a href="#facilities" class="footer-link">Facilities</a></li>
+                        <li><a href="#events" class="footer-link">Events</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="footer-heading">Contact Us</h5>
+                    <address>
+                        <p>Email: <a href="mailto:info@campusexplorer.edu" class="footer-link">info@campusexplorer.edu</a></p>
+                        <p>Phone: +1 (555) 123-4567</p>
+                    </address>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2025 Campus Explorer. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    
+    <!-- Main JS -->
+    <script>
+        // Sample data for campus buildings and facilities
+        const campusData = {
+            buildings: [
+                {
+                    id: 1,
+                    name: "Main Academic Building",
+                    coordinates: [51.505, -0.09],
+                    category: "academic",
+                    description: "The main hub for lectures and classes",
+                    fullDescription: "The Main Academic Building is the heart of our campus, housing most undergraduate classes, faculty offices, and administrative services. The building features modern classrooms equipped with the latest technology to enhance the learning experience.",
+                    hours: "Monday-Friday: 7:00 AM - 10:00 PM, Saturday: 8:00 AM - 5:00 PM, Sunday: Closed",
+                    contact: "academic-building@university.edu | (555) 123-4567",
+                    image: "https://source.unsplash.com/random/600x400/?university,building",
+                    facilities: ["Computer Lab", "Study Rooms", "Lecture Halls", "Faculty Offices"],
+                    events: [
+                        {
+                            name: "New Student Orientation",
+                            date: "March 15, 2025",
+                            time: "9:00 AM - 3:00 PM",
+                            location: "Room 101"
+                        },
+                        {
+                            name: "Career Fair",
+                            date: "March 20, 2025",
+                            time: "10:00 AM - 4:00 PM",
+                            location: "Main Hall"
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "Science Complex",
+                    coordinates: [51.506, -0.089],
+                    category: "academic",
+                    description: "Home to science departments and research laboratories",
+                    fullDescription: "The Science Complex houses the Biology, Chemistry, Physics, and Earth Sciences departments. It features state-of-the-art laboratories, research facilities, and specialized equipment for hands-on learning and groundbreaking research.",
+                    hours: "Monday-Friday: 8:00 AM - 9:00 PM, Saturday: 9:00 AM - 6:00 PM, Sunday: 12:00 PM - 5:00 PM",
+                    contact: "science-complex@university.edu | (555) 234-5678",
+                    image: "https://source.unsplash.com/random/600x400/?science,laboratory",
+                    facilities: ["Research Labs", "Greenhouse", "Observatory", "Computer Cluster"],
+                    events: [
+                        {
+                            name: "Science Fair",
+                            date: "March 18, 2025",
+                            time: "1:00 PM - 5:00 PM",
+                            location: "Atrium"
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "University Library",
+                    coordinates: [51.504, -0.091],
+                    category: "library",
+                    description: "Main library with extensive collections and study spaces",
+                    fullDescription: "Our University Library houses over 2 million books, journals, and digital resources. It offers quiet study spaces, group collaboration rooms, computer labs, and a rare book collection. The library staff provides research assistance and hosts workshops throughout the academic year.",
+                    hours: "Monday-Thursday: 7:00 AM - 12:00 AM, Friday: 7:00 AM - 10:00 PM, Saturday-Sunday: 9:00 AM - 10:00 PM",
+                    contact: "library@university.edu | (555) 345-6789",
+                    image: "https://source.unsplash.com/random/600x400/?library",
+                    facilities: ["Study Rooms", "Computer Lab", "Media Center", "Special Collections"],
+                    events: [
+                        {
+                            name: "Research Workshop",
+                            date: "March 12, 2025",
+                            time: "2:00 PM - 4:00 PM",
+                            location: "Digital Commons"
+                        },
+                        {
+                            name: "Author Talk",
+                            date: "March 25, 2025",
+                            time: "6:00 PM - 8:00 PM",
+                            location: "Reading Room"
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "Student Center",
+                    coordinates: [51.505, -0.092],
+                    category: "student-services",
+                    description: "Center for student activities, dining, and services",
+                    fullDescription: "The Student Center serves as the hub of campus life, offering dining options, lounge areas, meeting spaces, and offices for student organizations. It's where students gather to socialize, study, attend events, and access important services like counseling and career advising.",
+                    hours: "Monday-Friday: 7:00 AM - 11:00 PM, Saturday-Sunday: 8:00 AM - 10:00 PM",
+                    contact: "student-center@university.edu | (555) 456-7890",
+                    image: "https://source.unsplash.com/random/600x400/?student,center",
+                    facilities: ["Food Court", "Bookstore", "Student Organizations", "Counseling Center"],
+                    events: [
+                        {
+                            name: "Student Club Fair",
+                            date: "March 14, 2025",
+                            time: "11:00 AM - 3:00 PM",
+                            location: "Main Hall"
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: "Sports Complex",
+                    coordinates: [51.507, -0.093],
+                    category: "sports",
+                    description: "Athletic facilities including gym, pool, and fields",
+                    fullDescription: "Our state-of-the-art Sports Complex features an Olympic-sized swimming pool, basketball courts, indoor track, weight room, and various fitness studios. The complex also includes our football stadium, baseball field, tennis courts, and training facilities for varsity athletes.",
+                    hours: "Monday-Friday: 6:00 AM - 10:00 PM, Saturday-Sunday: 8:00 AM - 8:00 PM",
+                    contact: "sports@university.edu | (555) 567-8901",
+                    image: "https://source.unsplash.com/random/600x400/?sports,gym",
+                    facilities: ["Gymnasium", "Swimming Pool", "Fitness Center", "Indoor Track"],
+                    events: [
+                        {
+                            name: "Basketball Tournament",
+                            date: "March 16-17, 2025",
+                            time: "All Day",
+                            location: "Main Court"
+                        },
+                        {
+                            name: "Fitness Workshop",
+                            date: "March 21, 2025",
+                            time: "10:00 AM - 12:00 PM",
+                            location: "Studio B"
+                        }
+                    ]
+                },
+                {
+                    id: 6,
+                    name: "Dining Hall",
+                    coordinates: [51.505, -0.094],
+                    category: "dining",
+                    description: "Main dining facility with multiple food options",
+                    fullDescription: "The main Dining Hall offers a variety of culinary options catering to different dietary preferences and restrictions. It features multiple stations including international cuisine, vegetarian/vegan options, a grill, salad bar, and dessert station. The facility uses locally-sourced ingredients when possible.",
+                    hours: "Monday-Friday: 7:00 AM - 8:00 PM, Saturday-Sunday: 9:00 AM - 7:00 PM",
+                    contact: "dining@university.edu | (555) 678-9012",
+                    image: "https://source.unsplash.com/random/600x400/?cafeteria",
+                    facilities: ["Food Stations", "Coffee Shop", "Convenience Store", "Private Dining Room"],
+                    events: [
+                        {
+                            name: "International Food Festival",
+                            date: "March 19, 2025",
+                            time: "5:00 PM - 8:00 PM",
+                            location: "Main Dining Area"
+                        }
+                    ]
+                }
+            ],
+            events: [
+                {
+                    id: 1,
+                    name: "New Student Orientation",
+                    date: "March 15, 2025",
+                    time: "9:00 AM - 3:00 PM",
+                    location: "Main Academic Building",
+                    description: "Welcome event for new students with campus tours, information sessions, and social activities.",
+                    image: "https://source.unsplash.com/random/300x200/?orientation"
+                },
+                {
+                    id: 2,
+                    name: "Career Fair",
+                    date: "March 20, 2025",
+                    time: "10:00 AM - 4:00 PM",
+                    location: "Main Academic Building",
+                    description: "Connect with potential employers from various industries and explore career opportunities.",
+                    image: "https://source.unsplash.com/random/300x200/?career,fair"
+                },
+                {
+                    id: 3,
+                    name: "Science Fair",
+                    date: "March 18, 2025",
+                    time: "1:00 PM - 5:00 PM",
+                    location: "Science Complex",
+                    description: "Showcase of student research projects and scientific innovations across disciplines.",
+                    image: "https://source.unsplash.com/random/300x200/?science,fair"
+                },
+                {
+                    id: 4,
+                    name: "Basketball Tournament",
+                    date: "March 16-17, 2025",
+                    time: "All Day",
+                    location: "Sports Complex",
+                    description: "Annual basketball tournament featuring teams from various departments and colleges.",
+                    image: "https://source.unsplash.com/random/300x200/?basketball"
+                },
+                {
+                    id: 5,
+                    name: "Student Club Fair",
+                    date: "March 14, 2025",
+                    time: "11:00 AM - 3:00 PM",
+                    location: "Student Center",
+                    description: "Explore and join various student clubs and organizations on campus.",
+                    image: "https://source.unsplash.com/random/300x200/?club,fair"
+                },
+                {
+                    id: 6,
+                    name: "International Food Festival",
+                    date: "March 19, 2025",
+                    time: "5:00 PM - 8:00 PM",
+                    location: "Dining Hall",
+                    description: "Experience cuisines from around the world prepared by international student groups.",
+                    image: "https://source.unsplash.com/random/300x200/?food,festival"
+                }
+            ]
+        };
+
+        // Initialize the map
+        let map;
+        let markers = [];
+        let activeMarkerId = null;
+        
+        function initMap() {
+            // Create map centered on campus
+            map = L.map('campus-map').setView([51.505, -0.09], 16);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add buildings to map
+            campusData.buildings.forEach(building => {
+                const marker = L.marker(building.coordinates)
+                    .addTo(map)
+                    .bindPopup(`<b>${building.name}</b><br>${building.description}`);
+                
+                marker.buildingId = building.id;
+                marker.on('click', function() {
+                    showBuildingDetails(building.id);
+                    activeMarkerId = building.id;
+                    
+                    // Highlight active marker
+                    markers.forEach(m => {
+                        if (m.buildingId === activeMarkerId) {
+                            m.openPopup();
+                        } else {
+                            m.closePopup();
+                        }
+                    });
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Create location list
+            createLocationsList();
+            
+            // Populate events
+            populateEvents();
+        }
+        
+        function showBuildingDetails(buildingId) {
+            const building = campusData.buildings.find(b => b.id === buildingId);
+            
+            if (!building) return;
+            // Set building details
+            document.getElementById('building-title').textContent = building.name;
+            document.getElementById('building-description').textContent = building.description;
+            document.getElementById('building-full-description').textContent = building.fullDescription;
+            document.getElementById('building-hours').textContent = building.hours;
+            document.getElementById('building-contact').textContent = building.contact;
+            document.getElementById('building-image').src = building.image;
+            document.getElementById('building-image').alt = building.name;
+            
+            // Show building details section
+            document.getElementById('building-details').style.display = 'block';
+            
+            // Set facilities
+            const facilitiesContainer = document.getElementById('building-facilities');
+            facilitiesContainer.innerHTML = '';
+            
+            if (building.facilities && building.facilities.length > 0) {
+                building.facilities.forEach(facility => {
+                    const badge = document.createElement('span');
+                    badge.className = 'facility-badge';
+                    badge.textContent = facility;
+                    facilitiesContainer.appendChild(badge);
+                });
+            } else {
+                facilitiesContainer.innerHTML = '<p>No facilities information available.</p>';
+            }
+            
+            // Set events
+            const eventsContainer = document.getElementById('building-events');
+            eventsContainer.innerHTML = '';
+            
+            if (building.events && building.events.length > 0) {
+                building.events.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'mb-3';
+                    eventDiv.innerHTML = `
+                        <h6>${event.name}</h6>
+                        <p class="mb-1"><span class="event-time">${event.date}, ${event.time}</span></p>
+                        <p class="mb-0 text-muted">Location: ${event.location}</p>
+                    `;
+                    eventsContainer.appendChild(eventDiv);
+                });
+            } else {
+                eventsContainer.innerHTML = '<p>No upcoming events at this location.</p>';
+            }
+            
+            // Set active tab to info
+            setActiveTab('info');
+        }
+        
+        function createLocationsList() {
+            const locationsContainer = document.getElementById('locations-list');
+            locationsContainer.innerHTML = '';
+            
+            // Group buildings by category
+            const categories = {};
+            campusData.buildings.forEach(building => {
+                if (!categories[building.category]) {
+                    categories[building.category] = [];
+                }
+                categories[building.category].push(building);
+            });
+            
+            // Create category groups
+            for (const [category, buildings] of Object.entries(categories)) {
+                const categoryName = formatCategoryName(category);
+                
+                const categoryHeader = document.createElement('h6');
+                categoryHeader.className = 'mt-3 mb-2';
+                categoryHeader.textContent = categoryName;
+                locationsContainer.appendChild(categoryHeader);
+                
+                // Create building items
+                buildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 17);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            }
+        }
+        
+        function formatCategoryName(category) {
+            // Convert category-name to Category Name
+            return category.split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+        
+        function filterLocations(category) {
+            // Update location list to show only buildings of this category
+            const locationsContainer = document.getElementById('locations-list');
+            locationsContainer.innerHTML = '';
+            
+            const filteredBuildings = campusData.buildings.filter(
+                building => building.category === category
+            );
+            
+            if (filteredBuildings.length === 0) {
+                locationsContainer.innerHTML = '<p>No locations found in this category.</p>';
+                return;
+            }
+            
+            const categoryName = formatCategoryName(category);
+            const categoryHeader = document.createElement('h6');
+            categoryHeader.className = 'mt-3 mb-2';
+            categoryHeader.textContent = categoryName;
+            locationsContainer.appendChild(categoryHeader);
+            
+            // Create building items
+            filteredBuildings.forEach(building => {
+                const locationCard = document.createElement('div');
+                locationCard.className = 'location-card p-2 mb-1 rounded';
+                locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                locationCard.addEventListener('click', () => {
+                    // Center map on this building
+                    map.setView(building.coordinates, 17);
+                    
+                    // Show building details
+                    showBuildingDetails(building.id);
+                    
+                    // Highlight marker
+                    activeMarkerId = building.id;
+                    markers.forEach(marker => {
+                        if (marker.buildingId === building.id) {
+                            marker.openPopup();
+                        } else {
+                            marker.closePopup();
+                        }
+                    });
+                });
+                
+                locationsContainer.appendChild(locationCard);
+            });
+            
+            // Fit map to show all filtered buildings
+            if (filteredBuildings.length > 0) {
+                const bounds = L.latLngBounds(filteredBuildings.map(b => b.coordinates));
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+            
+            // Scroll to the map section
+            document.getElementById('campus-tour').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function populateEvents() {
+            const eventsContainer = document.getElementById('events-container');
+            eventsContainer.innerHTML = '';
+            
+            campusData.events.forEach(event => {
+                const eventCard = document.createElement('div');
+                eventCard.className = 'col-md-4';
+                eventCard.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${event.image}" class="card-img-top" alt="${event.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${event.name}</h5>
+                            <p class="mb-1"><span class="event-time">${event.date}, ${event.time}</span></p>
+                            <p class="mb-2 text-muted">Location: ${event.location}</p>
+                            <p class="card-text">${event.description}</p>
+                        </div>
+                    </div>
+                `;
+                eventsContainer.appendChild(eventCard);
+            });
+        }
+        
+        function setActiveTab(tabId) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to selected tab
+            const selectedTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Show selected tab content
+            const selectedContent = document.getElementById(`${tabId}-tab`);
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+        }
+        
+        // Set up search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('location-search');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.length < 2) {
+                    // Reset location list if search is cleared
+                    createLocationsList();
+                    return;
+                }
+                
+                // Filter buildings based on search term
+                const filteredBuildings = campusData.buildings.filter(building => 
+                    building.name.toLowerCase().includes(searchTerm) || 
+                    building.description.toLowerCase().includes(searchTerm) ||
+                    (building.facilities && building.facilities.some(f => f.toLowerCase().includes(searchTerm)))
+                );
+                
+                // Update location list
+                const locationsContainer = document.getElementById('locations-list');
+                locationsContainer.innerHTML = '';
+                
+                if (filteredBuildings.length === 0) {
+                    locationsContainer.innerHTML = '<p>No locations found matching your search.</p>';
+                    return;
+                }
+                
+                // Create search results header
+                const searchHeader = document.createElement('h6');
+                searchHeader.className = 'mt-3 mb-2';
+                searchHeader.textContent = 'Search Results';
+                locationsContainer.appendChild(searchHeader);
+                
+                // Create building items
+                filteredBuildings.forEach(building => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card p-2 mb-1 rounded';
+                    locationCard.innerHTML = `<p class="mb-0">${building.name}</p>`;
+                    locationCard.addEventListener('click', () => {
+                        // Center map on this building
+                        map.setView(building.coordinates, 17);
+                        
+                        // Show building details
+                        showBuildingDetails(building.id);
+                        
+                        // Highlight marker
+                        activeMarkerId = building.id;
+                        markers.forEach(marker => {
+                            if (marker.buildingId === building.id) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    });
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            });
+        }
+        
+        // Initialize tabs
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+        }
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            setupSearch();
+            initTabs();
+        });
+    </script>
+</body>
+</html>

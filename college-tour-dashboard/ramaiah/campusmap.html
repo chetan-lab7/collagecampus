@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramaiah Institute of Technology Campus Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a2a6c;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .container {
+            padding: 2rem;
+        }
+
+        .map-container {
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        #campus-map {
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #95a5a6;
+        }
+
+        .building-info {
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs-container {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            display: inline-block;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid #1a2a6c;
+            color: #1a2a6c;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .building-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .location-card {
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .location-card:hover {
+            background-color: rgba(26, 42, 108, 0.1);
+        }
+
+        .facility-badge {
+            background-color: #f0f2f5;
+            color: #1a2a6c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        .event-time {
+            color: #b21f1f;
+            font-weight: 600;
+        }
+
+        .directions-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #1a2a6c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .directions-btn:hover {
+            background: #b21f1f;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+            
+            .building-info {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/ramaiah_logo.png" alt="Ramaiah Institute of Technology">
+                RIT Campus Map
+            </a>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="search-box">
+                    <span class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="location-search" class="form-control" placeholder="Search for buildings, facilities...">
+                </div>
+                <div class="map-container">
+                    <div id="campus-map"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div id="building-info" class="building-info card">
+                    <div class="card-body">
+                        <h4 id="building-title" class="card-title">Select a Building</h4>
+                        <p id="building-description" class="text-muted mb-3">Click on any building on the map to see more details.</p>
+                        
+                        <div id="building-details" style="display: none;">
+                            <img id="building-image" class="building-image" src="" alt="Building Image">
+                            
+                            <div class="tabs-container">
+                                <div class="tab active" data-tab="info">Information</div>
+                                <div class="tab" data-tab="facilities">Facilities</div>
+                                <div class="tab" data-tab="events">Events</div>
+                            </div>
+                            
+                            <div id="info-tab" class="tab-content active">
+                                <p id="building-full-description"></p>
+                                <p><strong>Hours:</strong> <span id="building-hours"></span></p>
+                                <p><strong>Contact:</strong> <span id="building-contact"></span></p>
+                                <button id="get-directions" class="directions-btn" onclick="getDirections()">
+                                    <i class="fas fa-directions"></i> Get Directions
+                                </button>
+                            </div>
+                            
+                            <div id="facilities-tab" class="tab-content">
+                                <div id="building-facilities"></div>
+                            </div>
+                            
+                            <div id="events-tab" class="tab-content">
+                                <div id="building-events"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Campus Locations</h5>
+                        <div id="locations-list">
+                            <!-- Location cards will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    
+    <script>
+        // Campus data with building information
+        const campusData = {
+            "Library": {
+                coordinates: [13.03019, 77.56482],
+                category: "academic",
+                description: "Central Library with vast collection of books and digital resources",
+                fullDescription: "The Central Library is equipped with a comprehensive collection of academic resources, research journals, and digital learning materials. Features modern reading rooms and multimedia sections.",
+                hours: "Mon-Sat: 8:00 AM - 8:00 PM",
+                contact: "Tel: +91 80 2360 8445\nEmail: library@msrit.edu",
+                image: "../assets/library.jpg",
+                facilities: ["Reading Halls", "Digital Library", "Discussion Rooms", "Reference Section"],
+                events: ["Book Exhibition - Monthly", "Research Workshop - Weekly"]
+            },
+            "Ramaiah Institute of Technology": {
+                coordinates: [13.03076, 77.56514],
+                category: "academic",
+                description: "Main building of RIT with administrative offices",
+                fullDescription: "The main building houses administrative offices, classrooms, and various departments. It serves as the central hub for academic and administrative activities.",
+                hours: "Mon-Sat: 8:00 AM - 6:00 PM",
+                contact: "Tel: +91 80 2360 8444\nEmail: principal@msrit.edu",
+                image: "../assets/msrit_main.jpg",
+                facilities: ["Administrative Offices", "Classrooms", "Conference Halls", "Department Offices"],
+                events: ["College Day - Apr 15", "Technical Symposium - Monthly"]
+            },
+            "Quadrangle": {
+                coordinates: [13.03108, 77.56538],
+                category: "facilities",
+                description: "Central open space for college events",
+                fullDescription: "The Quadrangle is a spacious open area used for college gatherings, cultural events, and student activities. It's surrounded by academic blocks and features well-maintained landscaping.",
+                hours: "Always Open",
+                contact: "Events Coordinator: events@msrit.edu",
+                image: "../assets/quadrangle.jpg",
+                facilities: ["Event Space", "Seating Area", "Stage", "Sound System"],
+                events: ["Cultural Fest - Mar 30", "Annual Day Celebrations"]
+            },
+            "MSRIT GYM": {
+                coordinates: [13.03168, 77.56493],
+                category: "sports",
+                description: "Well-equipped gymnasium for students and staff",
+                fullDescription: "Modern gymnasium featuring latest fitness equipment, dedicated trainers, and separate sections for cardio and strength training.",
+                hours: "Mon-Sat: 6:00 AM - 9:00 PM",
+                contact: "Tel: +91 80 2360 8446\nEmail: gym@msrit.edu",
+                image: "../assets/gym.jpg",
+                facilities: ["Cardio Section", "Weight Training Area", "Changing Rooms", "Trainers"],
+                events: ["Fitness Workshop - Weekly", "Body Building Competition - Yearly"]
+            },
+            "Basketball Court": {
+                coordinates: [13.03202, 77.56539],
+                category: "sports",
+                description: "Professional basketball court with spectator area",
+                fullDescription: "Standard size basketball court with high-quality flooring and lighting for evening games. Regular tournaments and practice sessions are conducted here.",
+                hours: "6:00 AM - 9:00 PM",
+                contact: "Sports Department: sports@msrit.edu",
+                image: "../assets/basketball.jpg",
+                facilities: ["Professional Court", "Spectator Seating", "Floodlights", "Equipment Room"],
+                events: ["Inter-College Tournament - Apr 5", "Practice Sessions - Daily"]
+            },
+            "Gate 10": {
+                coordinates: [13.03191, 77.5641],
+                category: "entrance",
+                description: "Main entrance with security checkpoint",
+                fullDescription: "Gate 10 is one of the main entrances to the campus with 24/7 security, visitor registration, and information desk.",
+                hours: "24/7",
+                contact: "Security: +91 80 2360 8447",
+                image: "../assets/gate.jpg",
+                facilities: ["Security Post", "Visitor Registration", "Information Desk", "CCTV Surveillance"],
+                events: []
+            },
+            "Computer Science Block": {
+                coordinates: [13.03130, 77.56500],
+                category: "academic",
+                description: "Department of Computer Science and Engineering",
+                fullDescription: "Modern facility housing computer labs, research centers, and classrooms for Computer Science department.",
+                hours: "Mon-Sat: 8:00 AM - 6:00 PM",
+                contact: "Tel: +91 80 2360 8448\nEmail: cse@msrit.edu",
+                image: "../assets/cse_block.jpg",
+                facilities: ["Computer Labs", "Research Centers", "Seminar Halls", "Project Labs"],
+                events: ["Tech Fest - Apr 10", "Coding Competitions - Monthly"]
+            },
+            "Cafeteria": {
+                coordinates: [13.03150, 77.56520],
+                category: "dining",
+                description: "Main campus cafeteria with multiple food options",
+                fullDescription: "Spacious cafeteria serving variety of cuisines including South Indian, North Indian, and fast food. Features comfortable seating and hygienic preparation areas.",
+                hours: "Mon-Sat: 8:00 AM - 7:00 PM",
+                contact: "Tel: +91 80 2360 8449\nEmail: cafeteria@msrit.edu",
+                image: "../assets/cafeteria.jpg",
+                facilities: ["Food Court", "Seating Area", "Payment Counter", "Vending Machines"],
+                events: ["Food Festival - Monthly"]
+            }
+        };
+
+        // Initialize map
+        let map;
+        let markers = [];
+        let activeMarkerId = null;
+        let selectedBuildingCoords = null;
+        
+        function initMap() {
+            // Create map centered on RIT Main Building
+            map = L.map('campus-map').setView([13.03076, 77.56514], 18);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add buildings to map
+            Object.entries(campusData).forEach(([name, building]) => {
+                const marker = L.marker(building.coordinates)
+                    .addTo(map)
+                    .bindPopup(`<b>${name}</b><br>${building.description}`);
+                
+                marker.buildingName = name;
+                marker.on('click', function() {
+                    showBuildingDetails(name);
+                    activeMarkerId = name;
+                    
+                    // Highlight active marker
+                    markers.forEach(m => {
+                        if (m.buildingName === activeMarkerId) {
+                            m.openPopup();
+                        } else {
+                            m.closePopup();
+                        }
+                    });
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Create location list
+            createLocationsList();
+        }
+        
+        function showBuildingDetails(buildingName) {
+            const building = campusData[buildingName];
+            if (!building) return;
+            
+            selectedBuildingCoords = building.coordinates;
+            
+            document.getElementById('building-title').textContent = buildingName;
+            document.getElementById('building-description').textContent = building.description;
+            document.getElementById('building-full-description').textContent = building.fullDescription;
+            document.getElementById('building-hours').textContent = building.hours;
+            document.getElementById('building-contact').textContent = building.contact;
+            document.getElementById('building-image').src = building.image;
+            document.getElementById('building-image').alt = buildingName;
+            
+            document.getElementById('building-details').style.display = 'block';
+            
+            const facilitiesContainer = document.getElementById('building-facilities');
+            facilitiesContainer.innerHTML = '';
+            
+            if (building.facilities && building.facilities.length > 0) {
+                building.facilities.forEach(facility => {
+                    const badge = document.createElement('span');
+                    badge.className = 'facility-badge';
+                    badge.textContent = facility;
+                    facilitiesContainer.appendChild(badge);
+                });
+            } else {
+                facilitiesContainer.innerHTML = '<p>No facilities information available.</p>';
+            }
+            
+            const eventsContainer = document.getElementById('building-events');
+            eventsContainer.innerHTML = '';
+            
+            if (building.events && building.events.length > 0) {
+                building.events.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'mb-3';
+                    eventDiv.innerHTML = `<p class="mb-1"><span class="event-time">${event}</span></p>`;
+                    eventsContainer.appendChild(eventDiv);
+                });
+            } else {
+                eventsContainer.innerHTML = '<p>No upcoming events at this location.</p>';
+            }
+            
+            setActiveTab('info');
+        }
+        
+        function createLocationsList() {
+            const locationsContainer = document.getElementById('locations-list');
+            locationsContainer.innerHTML = '';
+            
+            const categories = {
+                academic: "Academic Buildings",
+                sports: "Sports Facilities",
+                facilities: "Campus Facilities",
+                entrance: "Entrances",
+                dining: "Dining"
+            };
+            
+            Object.entries(categories).forEach(([category, title]) => {
+                const buildings = Object.entries(campusData).filter(([_, data]) => data.category === category);
+                
+                if (buildings.length > 0) {
+                    const categoryHeader = document.createElement('h6');
+                    categoryHeader.className = 'mt-3 mb-2';
+                    categoryHeader.textContent = title;
+                    locationsContainer.appendChild(categoryHeader);
+                    
+                    buildings.forEach(([name, _]) => {
+                        const locationCard = document.createElement('div');
+                        locationCard.className = 'location-card';
+                        locationCard.innerHTML = `<p class="mb-0">${name}</p>`;
+                        locationCard.onclick = () => {
+                            map.setView(campusData[name].coordinates, 19);
+                            showBuildingDetails(name);
+                            activeMarkerId = name;
+                            markers.forEach(marker => {
+                                if (marker.buildingName === name) {
+                                    marker.openPopup();
+                                } else {
+                                    marker.closePopup();
+                                }
+                            });
+                        };
+                        
+                        locationsContainer.appendChild(locationCard);
+                    });
+                }
+            });
+        }
+        
+        function setupSearch() {
+            const searchInput = document.getElementById('location-search');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.length < 2) {
+                    createLocationsList();
+                    return;
+                }
+                
+                const filteredBuildings = Object.entries(campusData).filter(([name, building]) => 
+                    name.toLowerCase().includes(searchTerm) || 
+                    building.description.toLowerCase().includes(searchTerm) ||
+                    (building.facilities && building.facilities.some(f => f.toLowerCase().includes(searchTerm)))
+                );
+                
+                const locationsContainer = document.getElementById('locations-list');
+                locationsContainer.innerHTML = '';
+                
+                if (filteredBuildings.length === 0) {
+                    locationsContainer.innerHTML = '<p>No locations found matching your search.</p>';
+                    return;
+                }
+                
+                const searchHeader = document.createElement('h6');
+                searchHeader.className = 'mt-3 mb-2';
+                searchHeader.textContent = 'Search Results';
+                locationsContainer.appendChild(searchHeader);
+                
+                filteredBuildings.forEach(([name, _]) => {
+                    const locationCard = document.createElement('div');
+                    locationCard.className = 'location-card';
+                    locationCard.innerHTML = `<p class="mb-0">${name}</p>`;
+                    locationCard.onclick = () => {
+                        map.setView(campusData[name].coordinates, 19);
+                        showBuildingDetails(name);
+                        activeMarkerId = name;
+                        markers.forEach(marker => {
+                            if (marker.buildingName === name) {
+                                marker.openPopup();
+                            } else {
+                                marker.closePopup();
+                            }
+                        });
+                    };
+                    
+                    locationsContainer.appendChild(locationCard);
+                });
+            });
+        }
+        
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+        }
+        
+        function setActiveTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        }
+        
+        function getDirections() {
+            if (!selectedBuildingCoords) {
+                alert("Please select a building first.");
+                return;
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const url = `https://www.google.com/maps/dir/${position.coords.latitude},${position.coords.longitude}/${selectedBuildingCoords[0]},${selectedBuildingCoords[1]}`;
+                    window.open(url, "_blank");
+                }, function(error) {
+                    alert("Error getting location. Please enable GPS and try again.");
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = '../../login.html';
+                return;
+            }
+
+            const selectedCollege = sessionStorage.getItem('selectedCollege');
+            if (selectedCollege !== 'ramaiah') {
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            initMap();
+            setupSearch();
+            initTabs();
+        });
+    </script>
+</body>
+</html> 

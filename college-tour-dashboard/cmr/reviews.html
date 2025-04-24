@@ -276,6 +276,116 @@
             text-align: right;
         }
 
+        /* Submit Review Form */
+        .review-form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .review-form-section h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .review-form {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 0 0.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #FFD700;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
         /* About section */
         .about-section {
             padding: 2rem;
@@ -456,199 +566,145 @@
     </style>
 </head>
 <body>
-    <div class="reviews-section">
-        <h2>Student Reviews</h2>
-        <div class="reviews-container">
-            <!-- Good Review 1 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Priya+S&background=random" alt="Priya S">
-                    <div class="review-info">
-                        <h3>Priya S</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+    <div class="container">
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <h2>Student Reviews</h2>
+            <div class="reviews-container">
+                <!-- Good Review 1 -->
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://ui-avatars.com/api/?name=Priya+S&background=random" alt="Priya S">
+                        <div class="review-info">
+                            <h3>Priya S</h3>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
                         </div>
                     </div>
+                    <p class="review-text">The faculty at CMR University is exceptional! They bring real-world experience into the classroom and are always available for guidance. The campus infrastructure is modern and well-maintained. I've had access to cutting-edge labs that have significantly enhanced my learning experience.</p>
+                    <p class="review-date">February 12, 2025</p>
                 </div>
-                <p class="review-text">The faculty at CMR University is exceptional! They bring real-world experience into the classroom and are always available for guidance. The campus infrastructure is modern and well-maintained. I've had access to cutting-edge labs that have significantly enhanced my learning experience.</p>
-                <p class="review-date">February 12, 2025</p>
-            </div>
-    
-            <!-- Good Review 2 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Rahul+K&background=random" alt="Rahul K">
-                    <div class="review-info">
-                        <h3>Rahul K</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">CMR University has transformed my career trajectory. The industry connections are unparalleled, and I secured an internship with a top company through campus placement. The curriculum is constantly updated to reflect industry needs, which gives students a competitive edge.</p>
-                <p class="review-date">January 28, 2025</p>
-            </div>
-    
-            <!-- Average Review 1 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Aditya+M&background=random" alt="Aditya M">
-                    <div class="review-info">
-                        <h3>Aditya M</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">The academic programs at CMR University are solid, but the administrative processes could be more streamlined. Registration and fee payment sometimes involve unnecessary bureaucracy. The faculty is knowledgeable, though some departments are better staffed than others.</p>
-                <p class="review-date">February 3, 2025</p>
-            </div>
-    
-            <!-- Good Review 3 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Shreya+D&background=random" alt="Shreya D">
-                    <div class="review-info">
-                        <h3>Shreya D</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">The research opportunities at CMR University are exceptional. As an undergraduate, I've already co-authored a paper with my professors. The interdisciplinary approach to education has broadened my perspective and prepared me for diverse career paths. The campus culture promotes innovation and critical thinking.</p>
-                <p class="review-date">December 15, 2024</p>
-            </div>
-    
-            <!-- Bad Review -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Vikram+J&background=random" alt="Vikram J">
-                    <div class="review-info">
-                        <h3>Vikram J</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">Disappointed with the value for money at CMR University. The fees are extremely high compared to other institutions offering similar programs. Additionally, some promised facilities were not available during my first year. The cafeteria food quality is subpar, and parking facilities are inadequate for the student population.</p>
-                <p class="review-date">January 10, 2025</p>
-            </div>
-    
-            <!-- Good Review 4 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Nisha+R&background=random" alt="Nisha R">
-                    <div class="review-info">
-                        <h3>Nisha R</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">The international exchange programs at CMR University have been life-changing. I spent a semester abroad which enhanced both my academic and personal growth. The university's focus on holistic development through sports, cultural activities, and community service has made my college experience truly memorable.</p>
-                <p class="review-date">February 18, 2025</p>
-            </div>
-    
-            <!-- Average Review 2 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Karthik+S&background=random" alt="Karthik S">
-                    <div class="review-info">
-                        <h3>Karthik S</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">CMR University offers decent academic programs, but the class sizes in popular courses are too large for effective learning. While most professors are good, teaching assistants vary in quality. The library resources are excellent, but limited study spaces become overcrowded during exam periods.</p>
-                <p class="review-date">January 5, 2025</p>
-            </div>
-    
-            <!-- Good Review 5 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Ananya+P&background=random" alt="Ananya P">
-                    <div class="review-info">
-                        <h3>Ananya P</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">The entrepreneurship ecosystem at CMR University is outstanding. The incubation center provided mentorship and seed funding for my startup idea. The curriculum emphasizes practical learning through projects and internships, which has prepared me for the professional world better than traditional education could have.</p>
-                <p class="review-date">December 22, 2024</p>
-            </div>
-    
-            <!-- Average Review 3 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Sanjay+N&background=random" alt="Sanjay N">
-                    <div class="review-info">
-                        <h3>Sanjay N</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">CMR University provides a balanced education but lacks flexibility in curriculum choices. Some departments are significantly better funded than others, creating an uneven experience depending on your major. Campus facilities are good but can get crowded. Hostel accommodation is average compared to other universities.</p>
-                <p class="review-date">February 8, 2025</p>
-            </div>
-    
-            <!-- Good Review 6 -->
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="https://ui-avatars.com/api/?name=Meera+L&background=random" alt="Meera L">
-                    <div class="review-info">
-                        <h3>Meera L</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">The diversity and inclusivity at CMR University create a rich learning environment. Students from different backgrounds bring varied perspectives to discussions. The mental health support services are excellent, and the career counseling center has been instrumental in helping me define my career path. Truly a student-centered institution!</p>
-                <p class="review-date">January 20, 2025</p>
+                <!-- More review cards here -->
             </div>
         </div>
+
+        <!-- Submit Review Section -->
+        <div class="review-form-section">
+            <h2>Share Your Experience</h2>
+            <form class="review-form" id="reviewForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5" class="fas fa-star"></label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" class="fas fa-star"></label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" class="fas fa-star"></label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" class="fas fa-star"></label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" class="fas fa-star"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewText">Your Review</label>
+                    <textarea class="form-control" id="reviewText" name="reviewText" placeholder="Share your experience at CMR University" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Review</button>
+                <div class="success-message" id="successMessage">
+                    <p>Thank you for your review! It has been submitted successfully.</p>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewForm = document.getElementById('reviewForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get the form values
+                const name = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const rating = document.querySelector('input[name="rating"]:checked').value;
+                const reviewText = document.getElementById('reviewText').value;
+                
+                // Here you would normally send the data to your server
+                // For demonstration, we'll just create a new review element and add it to the page
+                
+                // Create new review card
+                const reviewsContainer = document.querySelector('.reviews-container');
+                const newReview = document.createElement('div');
+                newReview.className = 'review-card';
+                
+                // Get initials for avatar
+                const nameParts = name.split(' ');
+                const initials = nameParts.length > 1 
+                    ? `${nameParts[0][0]}+${nameParts[1][0]}` 
+                    : `${nameParts[0][0]}+X`;
+                
+                // Get current date
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = now.toLocaleDateString('en-US', options);
+                
+                // Create stars based on rating
+                let stars = '';
+                for(let i = 1; i <= 5; i++) {
+                    if(i <= rating) {
+                        stars += '<i class="fas fa-star"></i>';
+                    } else {
+                        stars += '<i class="far fa-star"></i>';
+                    }
+                }
+                
+                // Set inner HTML for the new review
+                newReview.innerHTML = `
+                    <div class="review-header">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random" alt="${name}">
+                        <div class="review-info">
+                            <h3>${name}</h3>
+                            <div class="rating">
+                                ${stars}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">${reviewText}</p>
+                    <p class="review-date">${formattedDate}</p>
+                `;
+                
+                // Add the new review to the beginning of the reviews container
+                reviewsContainer.insertBefore(newReview, reviewsContainer.firstChild);
+                
+                // Show success message
+                successMessage.style.display = 'block';
+                
+                // Reset the form
+                reviewForm.reset();
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            });
+        });
+    </script>
 </body>
 </html>

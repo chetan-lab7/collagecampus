@@ -173,6 +173,24 @@
                 grid-template-columns: 1fr;
             }
         }
+        .details-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .details-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .details-btn i {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -187,7 +205,7 @@
             <li><a href="facilitie.html"><i class="fas fa-building"></i><span>Facilities</span></a></li>
             <li><a href="courses.html"><i class="fas fa-graduation-cap"></i><span>Courses</span></a></li>
             <li><a href="reviews.html"><i class="fas fa-star"></i><span>Reviews</span></a></li>
-            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            <li><a href="/landing.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
     </nav>
 
@@ -348,6 +366,12 @@
                     <div class="step" style="display: flex; gap: 1rem; align-items: flex-start;">
                         <div class="step-number" style="background: #1a2a6c; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
                         <div>Pay fees to confirm enrollment</div>
+                        
+            <div class="card" style="grid-column: span 2;">
+                <h3><i class="fas fa-university"></i></h3>
+                <a href="https://www.cmr.edu.in/" target="_blank" class="details-btn">
+                    <i class="fas fa-external-link-alt"></i> Get More Details
+                </a>
                     </div>
                 </div>
             </div>
